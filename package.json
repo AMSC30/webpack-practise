@@ -1,0 +1,12 @@
+{
+  "name": "full-webpack",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:AMSC30/full-webpack.git",
+  "author": "“zhengxixuan” <930042468@qq.com>",
+  "license": "MIT",
+  "dependencies": {
+    "webpack": "^5.49.0",
+    "webpack-cli": "^4.7.2"
+  }
+}
