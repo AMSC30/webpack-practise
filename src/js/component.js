@@ -1,3 +1,5 @@
+import '../css/index.css'
+
 export function createHello() {
 	const div = document.createElement('div')
 	div.classList.add('hello')
