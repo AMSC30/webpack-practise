@@ -18,6 +18,14 @@ module.exports = {
 					},
 					{
 						loader: 'less-loader'
+					},
+					{
+						loader: 'postcss-loader',
+						options: {
+							postcssOptions: {
+								plugins: [require('autoprefixer')]
+							}
+						}
 					}
 				]
 			},
@@ -29,6 +37,14 @@ module.exports = {
 					},
 					{
 						loader: 'css-loader'
+					},
+					{
+						loader: 'postcss-loader',
+						options: {
+							postcssOptions: {
+								plugins: [require('autoprefixer')]
+							}
+						}
 					},
 					{
 						loader: 'less-loader'
