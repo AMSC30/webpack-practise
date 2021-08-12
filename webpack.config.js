@@ -14,10 +14,10 @@ module.exports = {
 						loader: 'style-loader'
 					},
 					{
-						loader: 'css-loader'
-					},
-					{
-						loader: 'less-loader'
+						loader: 'css-loader',
+						options: {
+							importLoaders: 1
+						}
 					},
 					{
 						loader: 'postcss-loader'
@@ -31,7 +31,10 @@ module.exports = {
 						loader: 'style-loader'
 					},
 					{
-						loader: 'css-loader'
+						loader: 'css-loader',
+						options: {
+							importLoaders: 2
+						}
 					},
 					{
 						loader: 'postcss-loader'

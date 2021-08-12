@@ -1,5 +1,1 @@
-.hello-css {
-	color: aquamarine;
-	text-align: center;
-	user-select: none;
-}
+@import './common.css';
