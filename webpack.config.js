@@ -20,12 +20,7 @@ module.exports = {
 						loader: 'less-loader'
 					},
 					{
-						loader: 'postcss-loader',
-						options: {
-							postcssOptions: {
-								plugins: [require('autoprefixer')]
-							}
-						}
+						loader: 'postcss-loader'
 					}
 				]
 			},
@@ -39,12 +34,7 @@ module.exports = {
 						loader: 'css-loader'
 					},
 					{
-						loader: 'postcss-loader',
-						options: {
-							postcssOptions: {
-								plugins: ['postcss-preset-env']
-							}
-						}
+						loader: 'postcss-loader'
 					},
 					{
 						loader: 'less-loader'
