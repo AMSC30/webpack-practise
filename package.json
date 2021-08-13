@@ -5,7 +5,7 @@
 	"repository": "git@github.com:AMSC30/full-webpack.git",
 	"author": "“zhengxixuan” <930042468@qq.com>",
 	"scripts": {
-		"dev": "webpack"
+		"build": "webpack"
 	},
 	"license": "MIT",
 	"dependencies": {

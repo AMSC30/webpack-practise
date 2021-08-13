@@ -6,5 +6,13 @@ export function createHello() {
 	div.classList.add('hello-css')
 	div.classList.add('hello-less')
 	div.innerHTML = ['hello', 'webpack'].join(' ')
+
+	const img1 = new Image()
+	img1.setAttribute('src', require('../images/4gyooe.jpg'))
+	img1.setAttribute('width', '100px')
+	const img2 = new Image()
+	img2.setAttribute('src', require('../images/avatar.jpg'))
+	div.appendChild(img1)
+	div.appendChild(img2)
 	return div
 }

@@ -43,6 +43,18 @@ module.exports = {
 						loader: 'less-loader'
 					}
 				]
+			},
+			{
+				test: /\.(jpe?g|png|gif|svg)$/i,
+				type: 'asset',
+				generator: {
+					filename: 'images/[name].[hash:8][ext]'
+				},
+				parser: {
+					dataUrlCondition: {
+						maxSize: 23 * 1024
+					}
+				}
 			}
 		]
 	}
