@@ -1,0 +1,23 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "16367897",
+      "name": "面性尺子",
+      "font_class": "mianxingchizi",
+      "unicode": "e667",
+      "unicode_decimal": 58983
+    },
+    {
+      "icon_id": "16367898",
+      "name": "面性电脑",
+      "font_class": "mianxingdiannao",
+      "unicode": "e668",
+      "unicode_decimal": 58984
+    }
+  ]
+}

@@ -14,5 +14,11 @@ export function createHello() {
 	img2.setAttribute('src', require('../images/avatar.jpg'))
 	div.appendChild(img1)
 	div.appendChild(img2)
+
+	const icon = document.createElement('i')
+	icon.classList.add('iconfont')
+	icon.classList.add('icon-mianxingchizi')
+	div.appendChild(icon)
+
 	return div
 }
