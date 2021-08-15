@@ -1,4 +1,3 @@
-import reduce from './module/common'
-const math = require('./module/es.js')
-console.log(reduce)
-console.log(math)
+const { add, reduce } = require('./module/common')
+add(1, 2)
+reduce(2, 1)
