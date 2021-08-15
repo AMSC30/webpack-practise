@@ -1,3 +1,3 @@
-const { add, reduce } = require('./module/common')
-add(1, 2)
-reduce(2, 1)
+import { createHello } from './js/component.js'
+
+document.body.appendChild(createHello())
