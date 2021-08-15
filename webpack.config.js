@@ -6,7 +6,7 @@ const { DefinePlugin } = require('webpack')
 module.exports = {
 	entry: './src/index.js',
 	mode: 'development',
-	devtool: 'source-map',
+	devtool: false,
 	output: {
 		path: path.resolve(__dirname, './dist'),
 		filename: 'index.js'
@@ -66,6 +66,15 @@ module.exports = {
 				test: /\.(eot|ttf|woff2?)$/i,
 				generator: {
 					filename: 'fonts/[name].[hash:8][ext]'
+				}
+			},
+			{
+				test: /\.js$/i,
+				use: {
+					loader: 'babel-loader',
+					options: {
+						presets: ['@babel/preset-env']
+					}
 				}
 			}
 		]
