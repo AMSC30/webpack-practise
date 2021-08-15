@@ -5,6 +5,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { DefinePlugin } = require('webpack')
 module.exports = {
 	entry: './src/index.js',
+	mode: 'development',
+	devtool: 'source-map',
 	output: {
 		path: path.resolve(__dirname, './dist'),
 		filename: 'index.js'

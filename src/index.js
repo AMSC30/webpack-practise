@@ -1,3 +1,4 @@
-import { createHello } from './js/component.js'
-
-document.body.appendChild(createHello())
+import reduce from './module/common'
+const math = require('./module/es.js')
+console.log(reduce)
+console.log(math)
