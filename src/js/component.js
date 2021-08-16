@@ -7,18 +7,19 @@ export function createHello() {
 	div.classList.add('hello-less')
 	div.innerHTML = ['hello', 'webpack'].join(' ')
 
-	const img1 = new Image()
-	img1.setAttribute('src', require('../images/4gyooe.jpg'))
-	img1.setAttribute('width', '100px')
-	const img2 = new Image()
-	img2.setAttribute('src', require('../images/avatar.jpg'))
-	div.appendChild(img1)
-	div.appendChild(img2)
+	// const img1 = new Image()
+	// img1.setAttribute('src', require('../images/4gyooe.jpg'))
+	// img1.setAttribute('width', '100px')
+	// const img2 = new Image()
+	// img2.setAttribute('src', require('../images/avatar.jpg'))
+	// div.appendChild(img1)
+	// div.appendChild(img2)
 
-	const icon = document.createElement('i')
-	icon.classList.add('iconfont')
-	icon.classList.add('icon-mianxingchizi')
-	div.appendChild(icon)
+	// const icon = document.createElement('i')
+	// icon.classList.add('iconfont')
+	// icon.classList.add('icon-mianxingchizi')
+	// div.appendChild(icon)
 
+	const p = new Promise((resolve, reject) => {})
 	return div
 }
