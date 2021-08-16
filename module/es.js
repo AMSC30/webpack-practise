@@ -1,13 +1,13 @@
 var __webpack_modules__ = {
-	'./src/module/es.js': function (__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-		__webpack_require__.r(__webpack_exports__)
-		__webpack_require__.d(__webpack_exports__, {
+	'./src/module/es.js': function (module, exports, __webpack_require__) {
+		__webpack_require__.r(exports)
+		__webpack_require__.d(exports, {
 			add: function () {
 				return add
 			}
 		})
 		const add = (a, b) => a + b
-		__webpack_exports__['default'] = (a, b) => a - b
+		exports['default'] = (a, b) => a - b
 	}
 }
 var __webpack_module_cache__ = {}
@@ -45,10 +45,10 @@ __webpack_require__.r = function (exports) {
 	Object.defineProperty(exports, '__esModule', { value: true })
 }
 
-var __webpack_exports__ = {}
+var exports = {}
 
-__webpack_require__.r(__webpack_exports__)
+__webpack_require__.r(exports)
 var _module_es_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__('./src/module/es.js')
 
-;(0, _module_es_js__WEBPACK_IMPORTED_MODULE_0__.add)(1, 2)
-;(0, _module_es_js__WEBPACK_IMPORTED_MODULE_0__.default)(2, 1)
+_module_es_js__WEBPACK_IMPORTED_MODULE_0__.add(1, 2)
+_module_es_js__WEBPACK_IMPORTED_MODULE_0__.default(2, 1)
