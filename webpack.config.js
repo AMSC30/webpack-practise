@@ -71,10 +71,7 @@ module.exports = {
 			{
 				test: /\.js$/i,
 				use: {
-					loader: 'babel-loader',
-					options: {
-						presets: ['@babel/preset-env']
-					}
+					loader: 'babel-loader'
 				}
 			}
 		]
