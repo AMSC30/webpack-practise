@@ -20,6 +20,13 @@ export function createHello() {
 	// icon.classList.add('icon-mianxingchizi')
 	// div.appendChild(icon)
 
-	const p = new Promise((resolve, reject) => {})
+	const p = new Promise((resolve, reject) => {
+		if (resolve) {
+			resolve()
+		} else {
+			reject()
+		}
+	})
+	p.finally(() => {})
 	return div
 }
