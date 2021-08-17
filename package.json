@@ -5,7 +5,9 @@
 	"repository": "git@github.com:AMSC30/full-webpack.git",
 	"author": "“zhengxixuan” <930042468@qq.com>",
 	"scripts": {
-		"build": "webpack"
+		"build": "webpack",
+		"watch": "webpack --watch",
+		"dev": "webpack serve"
 	},
 	"license": "MIT",
 	"dependencies": {
@@ -23,12 +25,14 @@
 		"eslint": "^7.32.0",
 		"eslint-loader": "^4.0.2",
 		"eslint-plugin-vue": "^7.16.0",
+		"express": "^4.17.1",
 		"html-webpack-plugin": "^5.3.2",
 		"less": "^4.1.1",
 		"less-loader": "^10.0.1",
 		"postcss-loader": "^6.1.1",
 		"postcss-preset-env": "^6.7.0",
 		"regenerator-runtime": "^0.13.9",
-		"style-loader": "^3.2.1"
+		"style-loader": "^3.2.1",
+		"webpack-dev-middleware": "^5.0.0"
 	}
 }

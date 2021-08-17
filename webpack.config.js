@@ -3,6 +3,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { DefinePlugin } = require('webpack')
+
 module.exports = {
 	entry: './src/index.js',
 	mode: 'development',
