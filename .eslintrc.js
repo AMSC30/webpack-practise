@@ -11,6 +11,7 @@ module.exports = {
 	plugins: ['vue'],
 	rules: {},
 	globals: {
-		__dirname: true
+		__dirname: true,
+		process: true
 	}
 }
