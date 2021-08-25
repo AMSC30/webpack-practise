@@ -7,12 +7,23 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 module.exports = {
 	context: path.resolve(__dirname, '../'),
 	entry: './src/index.js',
+	// entry: ['./src/index.js'],
+	// entry: {
+	// 	main: {
+	// 		import: './src/index',
+	// 		filename: '[name].[contenthash:8].js'
+	// 	}
+	// },
 	output: {
 		path: path.resolve(__dirname, '../dist'),
-		filename: 'js/[name].[contenthash:8].js',
+		filename: '[name].[contenthash:8].js',
 		clean: true
 	},
 	optimization: {
+		usedExports: true,
+		minimize: true,
+		moduleIds: 'deterministic',
+		runtimeChunk: 'single',
 		splitChunks: {
 			cacheGroups: {
 				common: {
