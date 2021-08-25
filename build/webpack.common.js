@@ -5,6 +5,7 @@ const { DefinePlugin } = require('webpack')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
+	context: path.resolve(__dirname, '../'),
 	entry: './src/index.js',
 	output: {
 		path: path.resolve(__dirname, '../dist'),
