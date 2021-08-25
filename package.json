@@ -5,9 +5,10 @@
 	"repository": "git@github.com:AMSC30/full-webpack.git",
 	"author": "“zhengxixuan” <930042468@qq.com>",
 	"scripts": {
-		"build": "webpack",
-		"watch": "webpack --watch",
-		"dev": "webpack serve",
+		"build:prod": "webpack --config ./build/webpack.prod.js",
+		"build:dev": "webpack --config ./build/webpack.dev.js",
+		"serve:dev": "webpack serve --config ./build/webpack.dev.js",
+		"serve:prod": "webpack serve --config ./build/webpack.prod.js",
 		"lib": "webpack --config ./src/library/config.js",
 		"shaking": "webpack --config ./src/shaking/config.js"
 	},

@@ -1,19 +1,14 @@
 const path = require('path')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const { DefinePlugin } = require('webpack')
 
 module.exports = {
 	entry: './src/index.js',
-	mode: 'development',
-	devtool: false,
-	devServer: {
-		hot: true
-	},
 	output: {
 		path: path.resolve(__dirname, './dist'),
-		filename: 'index.js'
+		filename: 'index.js',
+		clean: true
 	},
 	module: {
 		rules: [
@@ -87,7 +82,6 @@ module.exports = {
 		]
 	},
 	plugins: [
-		new CleanWebpackPlugin(),
 		new HtmlWebpackPlugin({ title: 'webpack', template: './public/index.html' }),
 		new DefinePlugin({
 			BASE_URL: '"./"'
