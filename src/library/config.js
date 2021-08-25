@@ -8,8 +8,7 @@ module.exports = {
 	output: {
 		path: path.resolve(__dirname, './dist'),
 		filename: '[name].[contenthash:8].js',
-		library: 'math',
-		libraryTarget: 'umd'
+		library: { name: 'math', type: 'umd' }
 	},
 	optimization: {
 		usedExports: true,
