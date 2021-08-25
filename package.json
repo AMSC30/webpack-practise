@@ -8,7 +8,8 @@
 		"build": "webpack",
 		"watch": "webpack --watch",
 		"dev": "webpack serve",
-		"lib": "webpack --config ./src/library/config.js"
+		"lib": "webpack --config ./src/library/config.js",
+		"shaking": "webpack --config ./src/shaking/config.js"
 	},
 	"license": "MIT",
 	"dependencies": {
