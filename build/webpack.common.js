@@ -16,7 +16,8 @@ module.exports = {
 	// },
 	output: {
 		path: path.resolve(__dirname, '../dist'),
-		filename: '[name].[contenthash:8].js',
+		hashDigestLength: 6,
+		filename: '[name].[contenthash].js',
 		clean: true
 	},
 	optimization: {
@@ -31,7 +32,7 @@ module.exports = {
 					chunks: 'all',
 					minChunks: 1,
 					minSize: 20,
-					filename: 'js/[name].[contenthash:8].js'
+					filename: 'js/[name].[contenthash].js'
 				}
 			}
 		}
