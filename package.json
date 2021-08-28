@@ -10,7 +10,8 @@
 		"serve:dev": "webpack serve --config ./build/webpack.dev.js",
 		"serve:prod": "webpack serve --config ./build/webpack.prod.js",
 		"lib": "webpack --config ./src/library/config.js",
-		"shaking": "webpack --config ./src/shaking/config.js"
+		"shaking": "webpack --config ./src/shaking/config.js",
+		"loader": "webpack --config ./src/loader/config.js"
 	},
 	"license": "MIT",
 	"dependencies": {
@@ -29,9 +30,11 @@
 		"eslint-loader": "^4.0.2",
 		"eslint-plugin-vue": "^7.16.0",
 		"express": "^4.17.1",
+		"highlight.js": "^11.2.0",
 		"html-webpack-plugin": "^5.3.2",
 		"less": "^4.1.1",
 		"less-loader": "^10.0.1",
+		"marked": "^3.0.2",
 		"mini-css-extract-plugin": "^2.2.0",
 		"postcss-loader": "^6.1.1",
 		"postcss-preset-env": "^6.7.0",
