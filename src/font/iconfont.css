@@ -1,21 +1,24 @@
 @font-face {
-  font-family: "iconfont"; /* Project id  */
-  src: url('iconfont.ttf?t=1628863633366') format('truetype');
+    font-family: 'iconfont';
+    src: url('iconfont.woff2') format('woff2'), url('iconfont.woff') format('woff'), url('iconfont.ttf') format('truetype');
 }
 
 .iconfont {
-  font-family: "iconfont" !important;
-  font-size: 16px;
-  font-style: normal;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-family: 'iconfont' !important;
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-mianxingchizi:before {
-  content: "\e667";
+.icon-kuihuazi:before {
+    content: '\e635';
 }
 
-.icon-mianxingdiannao:before {
-  content: "\e668";
+.icon-buding:before {
+    content: '\e63d';
 }
 
+.icon-putaogan:before {
+    content: '\e642';
+}
