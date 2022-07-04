@@ -7,6 +7,7 @@
     "author": "“zhengxixuan” <930042468@qq.com>",
     "scripts": {
         "build": "webpack --config ./build/webpack.dev.js",
+        "serve": "webpack serve --config ./build/webpack.dev.js",
         "build:prod": "webpack --config ./build/webpack.prod.js",
         "build:dev": "webpack --config ./build/webpack.dev.js",
         "serve:dev": "webpack serve --config ./build/webpack.dev.js",
@@ -16,9 +17,6 @@
         "loader": "webpack --config ./src/loader/config.js"
     },
     "license": "MIT",
-    "dependencies": {
-        "less": "^4.1.3"
-    },
     "devDependencies": {
         "css-loader": "^6.7.1",
         "csv-loader": "^3.0.3",
@@ -26,6 +24,7 @@
         "less-loader": "^11.0.0",
         "style-loader": "^3.3.1",
         "webpack": "^5.73.0",
-        "webpack-cli": "^4.10.0"
+        "webpack-cli": "^4.10.0",
+        "webpack-dev-server": "^4.9.3"
     }
 }

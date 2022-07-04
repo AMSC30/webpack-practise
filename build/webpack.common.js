@@ -3,11 +3,14 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 // const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const resolve = p => path.resolve(__dirname, '../src', p)
+
 module.exports = {
-    devtool: 'none',
     entry: {
-        index: resolve('index.js'),
-        print: resolve('js/print.js')
+        index: resolve('index.js')
+    },
+    devtool: 'inline-source-map',
+    devServer: {
+        static: path.resolve(__dirname, 'dist')
     },
     plugins: [
         new HtmlWebpackPlugin({
