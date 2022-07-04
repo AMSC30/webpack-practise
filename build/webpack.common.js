@@ -1,6 +1,5 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-// const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const resolve = p => path.resolve(__dirname, '../src', p)
 
@@ -9,15 +8,18 @@ module.exports = {
         index: resolve('index.js')
     },
     devtool: 'inline-source-map',
-    devServer: {
-        static: path.resolve(__dirname, 'dist')
-    },
+
     plugins: [
         new HtmlWebpackPlugin({
             title: '输出管理',
             template: resolve('index.html')
         })
     ],
+    optimization: {
+        splitChunks: {
+            chunks: 'all'
+        }
+    },
     output: {
         path: path.resolve(__dirname, '../dist'),
         hashDigestLength: 6,
