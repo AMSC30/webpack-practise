@@ -1,36 +1,20 @@
 const path = require('path')
-// const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 // const CopyWebpackPlugin = require('copy-webpack-plugin')
-// const { DefinePlugin } = require('webpack')
-// const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
+const resolve = p => path.resolve(__dirname, '../src', p)
 module.exports = {
-    context: path.resolve(__dirname, '../'),
-    entry: './src/index.js',
-    module: {
-        rules: [
-            {
-                test: /\.css$/i,
-                use: ['style-loader', 'css-loader']
-            },
-            {
-                test: /\.less$/i,
-                use: ['style-loader', 'css-loader', 'less-loader']
-            },
-            {
-                test: /\.(png|svg|jpg|jpeg|gif)/i,
-                type: 'asset/resource'
-            },
-            {
-                test: /\.(woff|woff2|eot|ttf|otf)/i,
-                type: 'asset/resource'
-            },
-            {
-                test: /\.(csv)/i,
-                use: ['csv-loader']
-            }
-        ]
+    devtool: 'none',
+    entry: {
+        index: resolve('index.js'),
+        print: resolve('js/print.js')
     },
+    plugins: [
+        new HtmlWebpackPlugin({
+            title: '输出管理',
+            template: resolve('index.html')
+        })
+    ],
     output: {
         path: path.resolve(__dirname, '../dist'),
         hashDigestLength: 6,

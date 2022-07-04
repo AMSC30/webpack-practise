@@ -1,4 +1,5 @@
 import { createHello } from './js/component.js'
+import './js/print.js'
 
 document.body.appendChild(createHello())
 
