@@ -1,7 +1,9 @@
-import { createHello } from './js/component.js'
-
-document.body.appendChild(createHello())
-
-if (process.env.NODE_ENV === 'production') {
-    console.log(121221)
+import print from './print'
+import './index.css'
+function createHello() {
+    const div = document.createElement('div')
+    div.innerHTML = 'hello webpack'
+    document.body.append(div)
 }
+print()
+createHello()

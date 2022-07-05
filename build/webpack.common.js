@@ -1,6 +1,5 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-// const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const resolve = p => path.resolve(__dirname, '../src', p)
 
@@ -10,11 +9,20 @@ module.exports = {
     },
     devtool: 'inline-source-map',
     devServer: {
-        static: path.resolve(__dirname, 'dist')
+        static: path.resolve(__dirname, 'dist'),
+        hot: true
+    },
+    module: {
+        rules: [
+            {
+                test: /\.css$/i,
+                use: ['style-loader', 'css-loader']
+            }
+        ]
     },
     plugins: [
         new HtmlWebpackPlugin({
-            title: '输出管理',
+            title: '输出管理&HMR',
             template: resolve('index.html')
         })
     ],
