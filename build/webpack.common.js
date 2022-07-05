@@ -5,21 +5,19 @@ const resolve = p => path.resolve(__dirname, '../src', p)
 
 module.exports = {
     entry: {
-        index: resolve('index.js')
+        index: resolve('index.ts')
     },
     devtool: 'inline-source-map',
-    devServer: {
-        static: path.resolve(__dirname, 'dist'),
-        hot: true
-    },
     module: {
         rules: [
             {
-                test: /\.css$/i,
-                use: ['style-loader', 'css-loader']
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/
             }
         ]
     },
+
     plugins: [
         new HtmlWebpackPlugin({
             title: '输出管理&HMR',
