@@ -19,11 +19,17 @@ module.exports = {
             },
             {
                 test: /\.(png|svg|jpg|jpeg|gif)/i,
-                type: 'asset/resource'
+                type: 'asset/resource',
+                generator: {
+                    filename: 'img/[name][ext]'
+                }
             },
             {
                 test: /\.(woff|woff2|eot|ttf|otf)/i,
-                type: 'asset/resource'
+                type: 'asset/resource',
+                generator: {
+                    filename: 'font/[name][ext][query]'
+                }
             },
             {
                 test: /\.(csv)/i,
