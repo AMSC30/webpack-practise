@@ -6,7 +6,7 @@
     "repository": "git@github.com:AMSC30/full-webpack.git",
     "author": "“zhengxixuan” <930042468@qq.com>",
     "scripts": {
-        "build": "node ./src/webpack-cli/bin/cli.js --config ./build/webpack.dev.js",
+        "build": "node ./src/webpack/bin/webpack.js --config ./build/webpack.dev.js",
         "serve": "webpack serve --config ./build/webpack.dev.js",
         "build:prod": "webpack --config ./build/webpack.prod.js",
         "build:dev": "webpack --config ./build/webpack.dev.js",

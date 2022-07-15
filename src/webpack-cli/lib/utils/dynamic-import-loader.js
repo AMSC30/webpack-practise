@@ -1,13 +1,12 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+'use strict'
+Object.defineProperty(exports, '__esModule', { value: true })
 function dynamicImportLoader() {
-    let importESM;
+    let importESM
     try {
-        importESM = new Function("id", "return import(id);");
+        importESM = new Function('id', 'return import(id);')
+    } catch (e) {
+        importESM = null
     }
-    catch (e) {
-        importESM = null;
-    }
-    return importESM;
+    return importESM
 }
-module.exports = dynamicImportLoader;
+module.exports = dynamicImportLoader
