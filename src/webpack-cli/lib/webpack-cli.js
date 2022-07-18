@@ -5,7 +5,7 @@ const path = require('path')
 const { pathToFileURL } = require('url')
 const util = require('util')
 const { program, Option } = require('commander')
-const WEBPACK_PACKAGE = process.env.WEBPACK_PACKAGE || 'webpack'
+const WEBPACK_PACKAGE = process.env.WEBPACK_PACKAGE || '../../webpack'
 const WEBPACK_DEV_SERVER_PACKAGE = process.env.WEBPACK_DEV_SERVER_PACKAGE || 'webpack-dev-server'
 
 class WebpackCLI {
@@ -1810,6 +1810,7 @@ class WebpackCLI {
             options.watch = true
         }
         compiler = await this.createCompiler(options, callback)
+
         if (!compiler) {
             return
         }
