@@ -55,11 +55,11 @@ const createMultiCompiler = (childOptions, options) => {
 const createCompiler = rawOptions => {
     const options = getNormalizedWebpackOptions(rawOptions)
     applyWebpackOptionsBaseDefaults(options)
-    debugger
     const compiler = new Compiler(options.context, options)
     new NodeEnvironmentPlugin({
         infrastructureLogging: options.infrastructureLogging
     }).apply(compiler)
+    // 配置的自定义插件
     if (Array.isArray(options.plugins)) {
         for (const plugin of options.plugins) {
             if (typeof plugin === 'function') {
@@ -69,11 +69,19 @@ const createCompiler = rawOptions => {
             }
         }
     }
+    // 初始化配置
     applyWebpackOptionsDefaults(options)
+
+    // 第一次触发钩子，自定义插件可以触发
     compiler.hooks.environment.call()
     compiler.hooks.afterEnvironment.call()
+
+    // 根据配置初始化默认插件
     new WebpackOptionsApply().process(options, compiler)
+
+    // 初始化
     compiler.hooks.initialize.call()
+
     return compiler
 }
 
@@ -93,70 +101,61 @@ const createCompiler = rawOptions => {
 
 const asArray = options => (Array.isArray(options) ? Array.from(options) : [options])
 
-const webpack = /** @type {WebpackFunctionSingle & WebpackFunctionMulti} */ (
-    /**
-     * @param {WebpackOptions | (ReadonlyArray<WebpackOptions> & MultiCompilerOptions)} options options
-     * @param {Callback<Stats> & Callback<MultiStats>=} callback callback
-     * @returns {Compiler | MultiCompiler}
-     */
-    (options, callback) => {
-        const create = () => {
-            if (!asArray(options).every(webpackOptionsSchemaCheck)) {
-                getValidateSchema()(webpackOptionsSchema, options)
-                util.deprecate(
-                    () => {},
-                    'webpack bug: Pre-compiled schema reports error while real schema is happy. This has performance drawbacks.',
-                    'DEP_WEBPACK_PRE_COMPILED_SCHEMA_INVALID'
-                )()
-            }
-            /** @type {MultiCompiler|Compiler} */
-            let compiler
-            let watch = false
-            /** @type {WatchOptions|WatchOptions[]} */
-            let watchOptions
-            if (Array.isArray(options)) {
-                /** @type {MultiCompiler} */
-                compiler = createMultiCompiler(options, /** @type {MultiCompilerOptions} */ (options))
-                watch = options.some(options => options.watch)
-                watchOptions = options.map(options => options.watchOptions || {})
-            } else {
-                const webpackOptions = /** @type {WebpackOptions} */ (options)
-                /** @type {Compiler} */
-                compiler = createCompiler(webpackOptions)
-                watch = webpackOptions.watch
-                watchOptions = webpackOptions.watchOptions || {}
-            }
-            return { compiler, watch, watchOptions }
+const webpack = (options, callback) => {
+    const create = () => {
+        if (!asArray(options).every(webpackOptionsSchemaCheck)) {
+            getValidateSchema()(webpackOptionsSchema, options)
+            util.deprecate(
+                () => {},
+                'webpack bug: Pre-compiled schema reports error while real schema is happy. This has performance drawbacks.',
+                'DEP_WEBPACK_PRE_COMPILED_SCHEMA_INVALID'
+            )()
         }
-        if (callback) {
-            try {
-                const { compiler, watch, watchOptions } = create()
-                if (watch) {
-                    compiler.watch(watchOptions, callback)
-                } else {
-                    compiler.run((err, stats) => {
-                        compiler.close(err2 => {
-                            callback(err || err2, stats)
-                        })
-                    })
-                }
-                return compiler
-            } catch (err) {
-                process.nextTick(() => callback(err))
-                return null
-            }
+        let compiler
+        let watch = false
+        let watchOptions
+        if (Array.isArray(options)) {
+            /** @type {MultiCompiler} */
+            compiler = createMultiCompiler(options, /** @type {MultiCompilerOptions} */ (options))
+            watch = options.some(options => options.watch)
+            watchOptions = options.map(options => options.watchOptions || {})
         } else {
-            const { compiler, watch } = create()
+            const webpackOptions = options
+
+            compiler = createCompiler(webpackOptions)
+            watch = webpackOptions.watch
+            watchOptions = webpackOptions.watchOptions || {}
+        }
+        return { compiler, watch, watchOptions }
+    }
+    if (callback) {
+        try {
+            const { compiler, watch, watchOptions } = create()
             if (watch) {
-                util.deprecate(
-                    () => {},
-                    "A 'callback' argument needs to be provided to the 'webpack(options, callback)' function when the 'watch' option is set. There is no way to handle the 'watch' option without a callback.",
-                    'DEP_WEBPACK_WATCH_WITHOUT_CALLBACK'
-                )()
+                compiler.watch(watchOptions, callback)
+            } else {
+                compiler.run((err, stats) => {
+                    compiler.close(err2 => {
+                        callback(err || err2, stats)
+                    })
+                })
             }
             return compiler
+        } catch (err) {
+            process.nextTick(() => callback(err))
+            return null
         }
+    } else {
+        const { compiler, watch } = create()
+        if (watch) {
+            util.deprecate(
+                () => {},
+                "A 'callback' argument needs to be provided to the 'webpack(options, callback)' function when the 'watch' option is set. There is no way to handle the 'watch' option without a callback.",
+                'DEP_WEBPACK_WATCH_WITHOUT_CALLBACK'
+            )()
+        }
+        return compiler
     }
-)
+}
 
 module.exports = webpack
