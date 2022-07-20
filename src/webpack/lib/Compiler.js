@@ -1078,6 +1078,7 @@ ${other}`)
 
             this.hooks.compile.call(params)
 
+            // compile后创建compilation
             const compilation = this.newCompilation(params)
 
             const logger = compilation.getLogger('webpack.Compiler')
