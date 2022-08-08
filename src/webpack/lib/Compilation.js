@@ -402,8 +402,6 @@ class Compilation {
         this._backCompat = compiler._backCompat
 
         const getNormalModuleLoader = () => deprecatedNormalModuleLoaderHook(this)
-        /** @typedef {{ additionalAssets?: true | Function }} ProcessAssetsAdditionalOptions */
-        /** @type {AsyncSeriesHook<[CompilationAssets], ProcessAssetsAdditionalOptions>} */
         const processAssetsHook = new AsyncSeriesHook(['assets'])
 
         let savedAssets = new Set()
@@ -501,7 +499,6 @@ class Compilation {
             }
         })
 
-        /** @type {SyncHook<[CompilationAssets]>} */
         const afterProcessAssetsHook = new SyncHook(['assets'])
 
         /**
@@ -548,152 +545,89 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             )
         }
         this.hooks = Object.freeze({
-            /** @type {SyncHook<[Module]>} */
             buildModule: new SyncHook(['module']),
-            /** @type {SyncHook<[Module]>} */
             rebuildModule: new SyncHook(['module']),
-            /** @type {SyncHook<[Module, WebpackError]>} */
             failedModule: new SyncHook(['module', 'error']),
-            /** @type {SyncHook<[Module]>} */
             succeedModule: new SyncHook(['module']),
-            /** @type {SyncHook<[Module]>} */
             stillValidModule: new SyncHook(['module']),
 
-            /** @type {SyncHook<[Dependency, EntryOptions]>} */
             addEntry: new SyncHook(['entry', 'options']),
-            /** @type {SyncHook<[Dependency, EntryOptions, Error]>} */
             failedEntry: new SyncHook(['entry', 'options', 'error']),
-            /** @type {SyncHook<[Dependency, EntryOptions, Module]>} */
             succeedEntry: new SyncHook(['entry', 'options', 'module']),
 
-            /** @type {SyncWaterfallHook<[(string[] | ReferencedExport)[], Dependency, RuntimeSpec]>} */
             dependencyReferencedExports: new SyncWaterfallHook(['referencedExports', 'dependency', 'runtime']),
 
-            /** @type {SyncHook<[ExecuteModuleArgument, ExecuteModuleContext]>} */
             executeModule: new SyncHook(['options', 'context']),
-            /** @type {AsyncParallelHook<[ExecuteModuleArgument, ExecuteModuleContext]>} */
             prepareModuleExecution: new AsyncParallelHook(['options', 'context']),
 
-            /** @type {AsyncSeriesHook<[Iterable<Module>]>} */
             finishModules: new AsyncSeriesHook(['modules']),
-            /** @type {AsyncSeriesHook<[Module]>} */
             finishRebuildingModule: new AsyncSeriesHook(['module']),
-            /** @type {SyncHook<[]>} */
             unseal: new SyncHook([]),
-            /** @type {SyncHook<[]>} */
             seal: new SyncHook([]),
 
-            /** @type {SyncHook<[]>} */
             beforeChunks: new SyncHook([]),
-            /** @type {SyncHook<[Iterable<Chunk>]>} */
             afterChunks: new SyncHook(['chunks']),
 
-            /** @type {SyncBailHook<[Iterable<Module>]>} */
             optimizeDependencies: new SyncBailHook(['modules']),
-            /** @type {SyncHook<[Iterable<Module>]>} */
             afterOptimizeDependencies: new SyncHook(['modules']),
 
-            /** @type {SyncHook<[]>} */
             optimize: new SyncHook([]),
-            /** @type {SyncBailHook<[Iterable<Module>]>} */
             optimizeModules: new SyncBailHook(['modules']),
-            /** @type {SyncHook<[Iterable<Module>]>} */
             afterOptimizeModules: new SyncHook(['modules']),
 
-            /** @type {SyncBailHook<[Iterable<Chunk>, ChunkGroup[]]>} */
             optimizeChunks: new SyncBailHook(['chunks', 'chunkGroups']),
-            /** @type {SyncHook<[Iterable<Chunk>, ChunkGroup[]]>} */
             afterOptimizeChunks: new SyncHook(['chunks', 'chunkGroups']),
 
-            /** @type {AsyncSeriesHook<[Iterable<Chunk>, Iterable<Module>]>} */
             optimizeTree: new AsyncSeriesHook(['chunks', 'modules']),
-            /** @type {SyncHook<[Iterable<Chunk>, Iterable<Module>]>} */
             afterOptimizeTree: new SyncHook(['chunks', 'modules']),
 
-            /** @type {AsyncSeriesBailHook<[Iterable<Chunk>, Iterable<Module>]>} */
             optimizeChunkModules: new AsyncSeriesBailHook(['chunks', 'modules']),
-            /** @type {SyncHook<[Iterable<Chunk>, Iterable<Module>]>} */
             afterOptimizeChunkModules: new SyncHook(['chunks', 'modules']),
-            /** @type {SyncBailHook<[], boolean>} */
             shouldRecord: new SyncBailHook([]),
 
-            /** @type {SyncHook<[Chunk, Set<string>, RuntimeRequirementsContext]>} */
             additionalChunkRuntimeRequirements: new SyncHook(['chunk', 'runtimeRequirements', 'context']),
-            /** @type {HookMap<SyncBailHook<[Chunk, Set<string>, RuntimeRequirementsContext]>>} */
             runtimeRequirementInChunk: new HookMap(() => new SyncBailHook(['chunk', 'runtimeRequirements', 'context'])),
-            /** @type {SyncHook<[Module, Set<string>, RuntimeRequirementsContext]>} */
             additionalModuleRuntimeRequirements: new SyncHook(['module', 'runtimeRequirements', 'context']),
-            /** @type {HookMap<SyncBailHook<[Module, Set<string>, RuntimeRequirementsContext]>>} */
             runtimeRequirementInModule: new HookMap(() => new SyncBailHook(['module', 'runtimeRequirements', 'context'])),
-            /** @type {SyncHook<[Chunk, Set<string>, RuntimeRequirementsContext]>} */
             additionalTreeRuntimeRequirements: new SyncHook(['chunk', 'runtimeRequirements', 'context']),
-            /** @type {HookMap<SyncBailHook<[Chunk, Set<string>, RuntimeRequirementsContext]>>} */
             runtimeRequirementInTree: new HookMap(() => new SyncBailHook(['chunk', 'runtimeRequirements', 'context'])),
 
-            /** @type {SyncHook<[RuntimeModule, Chunk]>} */
             runtimeModule: new SyncHook(['module', 'chunk']),
 
-            /** @type {SyncHook<[Iterable<Module>, any]>} */
             reviveModules: new SyncHook(['modules', 'records']),
-            /** @type {SyncHook<[Iterable<Module>]>} */
             beforeModuleIds: new SyncHook(['modules']),
-            /** @type {SyncHook<[Iterable<Module>]>} */
             moduleIds: new SyncHook(['modules']),
-            /** @type {SyncHook<[Iterable<Module>]>} */
             optimizeModuleIds: new SyncHook(['modules']),
-            /** @type {SyncHook<[Iterable<Module>]>} */
             afterOptimizeModuleIds: new SyncHook(['modules']),
 
-            /** @type {SyncHook<[Iterable<Chunk>, any]>} */
             reviveChunks: new SyncHook(['chunks', 'records']),
-            /** @type {SyncHook<[Iterable<Chunk>]>} */
             beforeChunkIds: new SyncHook(['chunks']),
-            /** @type {SyncHook<[Iterable<Chunk>]>} */
             chunkIds: new SyncHook(['chunks']),
-            /** @type {SyncHook<[Iterable<Chunk>]>} */
             optimizeChunkIds: new SyncHook(['chunks']),
-            /** @type {SyncHook<[Iterable<Chunk>]>} */
             afterOptimizeChunkIds: new SyncHook(['chunks']),
 
-            /** @type {SyncHook<[Iterable<Module>, any]>} */
             recordModules: new SyncHook(['modules', 'records']),
-            /** @type {SyncHook<[Iterable<Chunk>, any]>} */
             recordChunks: new SyncHook(['chunks', 'records']),
 
-            /** @type {SyncHook<[Iterable<Module>]>} */
             optimizeCodeGeneration: new SyncHook(['modules']),
 
-            /** @type {SyncHook<[]>} */
             beforeModuleHash: new SyncHook([]),
-            /** @type {SyncHook<[]>} */
             afterModuleHash: new SyncHook([]),
 
-            /** @type {SyncHook<[]>} */
             beforeCodeGeneration: new SyncHook([]),
-            /** @type {SyncHook<[]>} */
             afterCodeGeneration: new SyncHook([]),
 
-            /** @type {SyncHook<[]>} */
             beforeRuntimeRequirements: new SyncHook([]),
-            /** @type {SyncHook<[]>} */
             afterRuntimeRequirements: new SyncHook([]),
 
-            /** @type {SyncHook<[]>} */
             beforeHash: new SyncHook([]),
-            /** @type {SyncHook<[Chunk]>} */
             contentHash: new SyncHook(['chunk']),
-            /** @type {SyncHook<[]>} */
             afterHash: new SyncHook([]),
-            /** @type {SyncHook<[any]>} */
             recordHash: new SyncHook(['records']),
-            /** @type {SyncHook<[Compilation, any]>} */
             record: new SyncHook(['compilation', 'records']),
 
-            /** @type {SyncHook<[]>} */
             beforeModuleAssets: new SyncHook([]),
-            /** @type {SyncBailHook<[], boolean>} */
             shouldGenerateChunkAssets: new SyncBailHook([]),
-            /** @type {SyncHook<[]>} */
             beforeChunkAssets: new SyncHook([]),
             // TODO webpack 6 remove
             /** @deprecated */
