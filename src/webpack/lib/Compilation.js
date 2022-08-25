@@ -57,268 +57,6 @@ const processAsyncTree = require('./util/processAsyncTree')
 const { getRuntimeKey } = require('./util/runtime')
 const { isSourceEqual } = require('./util/source')
 
-/** @template T @typedef {import("tapable").AsArray<T>} AsArray<T> */
-/** @typedef {import("webpack-sources").Source} Source */
-/** @typedef {import("../declarations/WebpackOptions").EntryDescriptionNormalized} EntryDescription */
-/** @typedef {import("../declarations/WebpackOptions").OutputNormalized} OutputOptions */
-/** @typedef {import("../declarations/WebpackOptions").StatsOptions} StatsOptions */
-/** @typedef {import("../declarations/WebpackOptions").WebpackPluginFunction} WebpackPluginFunction */
-/** @typedef {import("../declarations/WebpackOptions").WebpackPluginInstance} WebpackPluginInstance */
-/** @typedef {import("./AsyncDependenciesBlock")} AsyncDependenciesBlock */
-/** @typedef {import("./Cache")} Cache */
-/** @typedef {import("./CacheFacade")} CacheFacade */
-/** @typedef {import("./ChunkGroup").ChunkGroupOptions} ChunkGroupOptions */
-/** @typedef {import("./Compiler")} Compiler */
-/** @typedef {import("./Compiler").CompilationParams} CompilationParams */
-/** @typedef {import("./DependenciesBlock")} DependenciesBlock */
-/** @typedef {import("./Dependency").DependencyLocation} DependencyLocation */
-/** @typedef {import("./Dependency").ReferencedExport} ReferencedExport */
-/** @typedef {import("./DependencyTemplate")} DependencyTemplate */
-/** @typedef {import("./Entrypoint").EntryOptions} EntryOptions */
-/** @typedef {import("./Module").CodeGenerationResult} CodeGenerationResult */
-/** @typedef {import("./ModuleFactory")} ModuleFactory */
-/** @typedef {import("./ModuleFactory").ModuleFactoryCreateDataContextInfo} ModuleFactoryCreateDataContextInfo */
-/** @typedef {import("./ModuleFactory").ModuleFactoryResult} ModuleFactoryResult */
-/** @typedef {import("./RequestShortener")} RequestShortener */
-/** @typedef {import("./RuntimeModule")} RuntimeModule */
-/** @typedef {import("./Template").RenderManifestEntry} RenderManifestEntry */
-/** @typedef {import("./Template").RenderManifestOptions} RenderManifestOptions */
-/** @typedef {import("./stats/DefaultStatsFactoryPlugin").StatsAsset} StatsAsset */
-/** @typedef {import("./stats/DefaultStatsFactoryPlugin").StatsError} StatsError */
-/** @typedef {import("./stats/DefaultStatsFactoryPlugin").StatsModule} StatsModule */
-/** @typedef {import("./util/Hash")} Hash */
-/** @template T @typedef {import("./util/deprecation").FakeHook<T>} FakeHook<T> */
-/** @typedef {import("./util/runtime").RuntimeSpec} RuntimeSpec */
-
-/**
- * @callback Callback
- * @param {(WebpackError | null)=} err
- * @returns {void}
- */
-
-/**
- * @callback ModuleCallback
- * @param {(WebpackError | null)=} err
- * @param {Module=} result
- * @returns {void}
- */
-
-/**
- * @callback ModuleFactoryResultCallback
- * @param {(WebpackError | null)=} err
- * @param {ModuleFactoryResult=} result
- * @returns {void}
- */
-
-/**
- * @callback ModuleOrFactoryResultCallback
- * @param {(WebpackError | null)=} err
- * @param {Module | ModuleFactoryResult=} result
- * @returns {void}
- */
-
-/**
- * @callback ExecuteModuleCallback
- * @param {(WebpackError | null)=} err
- * @param {ExecuteModuleResult=} result
- * @returns {void}
- */
-
-/**
- * @callback DepBlockVarDependenciesCallback
- * @param {Dependency} dependency
- * @returns {any}
- */
-
-/** @typedef {new (...args: any[]) => Dependency} DepConstructor */
-/** @typedef {Record<string, Source>} CompilationAssets */
-
-/**
- * @typedef {Object} AvailableModulesChunkGroupMapping
- * @property {ChunkGroup} chunkGroup
- * @property {Set<Module>} availableModules
- * @property {boolean} needCopy
- */
-
-/**
- * @typedef {Object} DependenciesBlockLike
- * @property {Dependency[]} dependencies
- * @property {AsyncDependenciesBlock[]} blocks
- */
-
-/**
- * @typedef {Object} ChunkPathData
- * @property {string|number} id
- * @property {string=} name
- * @property {string} hash
- * @property {function(number): string=} hashWithLength
- * @property {(Record<string, string>)=} contentHash
- * @property {(Record<string, (length: number) => string>)=} contentHashWithLength
- */
-
-/**
- * @typedef {Object} ChunkHashContext
- * @property {CodeGenerationResults} codeGenerationResults results of code generation
- * @property {RuntimeTemplate} runtimeTemplate the runtime template
- * @property {ModuleGraph} moduleGraph the module graph
- * @property {ChunkGraph} chunkGraph the chunk graph
- */
-
-/**
- * @typedef {Object} RuntimeRequirementsContext
- * @property {ChunkGraph} chunkGraph the chunk graph
- * @property {CodeGenerationResults} codeGenerationResults the code generation results
- */
-
-/**
- * @typedef {Object} ExecuteModuleOptions
- * @property {EntryOptions=} entryOptions
- */
-
-/**
- * @typedef {Object} ExecuteModuleResult
- * @property {any} exports
- * @property {boolean} cacheable
- * @property {Map<string, { source: Source, info: AssetInfo }>} assets
- * @property {LazySet<string>} fileDependencies
- * @property {LazySet<string>} contextDependencies
- * @property {LazySet<string>} missingDependencies
- * @property {LazySet<string>} buildDependencies
- */
-
-/**
- * @typedef {Object} ExecuteModuleArgument
- * @property {Module} module
- * @property {{ id: string, exports: any, loaded: boolean }=} moduleObject
- * @property {any} preparedInfo
- * @property {CodeGenerationResult} codeGenerationResult
- */
-
-/**
- * @typedef {Object} ExecuteModuleContext
- * @property {Map<string, { source: Source, info: AssetInfo }>} assets
- * @property {Chunk} chunk
- * @property {ChunkGraph} chunkGraph
- * @property {function(string): any=} __webpack_require__
- */
-
-/**
- * @typedef {Object} EntryData
- * @property {Dependency[]} dependencies dependencies of the entrypoint that should be evaluated at startup
- * @property {Dependency[]} includeDependencies dependencies of the entrypoint that should be included but not evaluated
- * @property {EntryOptions} options options of the entrypoint
- */
-
-/**
- * @typedef {Object} LogEntry
- * @property {string} type
- * @property {any[]} args
- * @property {number} time
- * @property {string[]=} trace
- */
-
-/**
- * @typedef {Object} KnownAssetInfo
- * @property {boolean=} immutable true, if the asset can be long term cached forever (contains a hash)
- * @property {boolean=} minimized whether the asset is minimized
- * @property {string | string[]=} fullhash the value(s) of the full hash used for this asset
- * @property {string | string[]=} chunkhash the value(s) of the chunk hash used for this asset
- * @property {string | string[]=} modulehash the value(s) of the module hash used for this asset
- * @property {string | string[]=} contenthash the value(s) of the content hash used for this asset
- * @property {string=} sourceFilename when asset was created from a source file (potentially transformed), the original filename relative to compilation context
- * @property {number=} size size in bytes, only set after asset has been emitted
- * @property {boolean=} development true, when asset is only used for development and doesn't count towards user-facing assets
- * @property {boolean=} hotModuleReplacement true, when asset ships data for updating an existing application (HMR)
- * @property {boolean=} javascriptModule true, when asset is javascript and an ESM
- * @property {Record<string, string | string[]>=} related object of pointers to other assets, keyed by type of relation (only points from parent to child)
- */
-
-/** @typedef {KnownAssetInfo & Record<string, any>} AssetInfo */
-
-/**
- * @typedef {Object} Asset
- * @property {string} name the filename of the asset
- * @property {Source} source source of the asset
- * @property {AssetInfo} info info about the asset
- */
-
-/**
- * @typedef {Object} ModulePathData
- * @property {string|number} id
- * @property {string} hash
- * @property {function(number): string=} hashWithLength
- */
-
-/**
- * @typedef {Object} PathData
- * @property {ChunkGraph=} chunkGraph
- * @property {string=} hash
- * @property {function(number): string=} hashWithLength
- * @property {(Chunk|ChunkPathData)=} chunk
- * @property {(Module|ModulePathData)=} module
- * @property {RuntimeSpec=} runtime
- * @property {string=} filename
- * @property {string=} basename
- * @property {string=} query
- * @property {string=} contentHashType
- * @property {string=} contentHash
- * @property {function(number): string=} contentHashWithLength
- * @property {boolean=} noChunkHash
- * @property {string=} url
- */
-
-/**
- * @typedef {Object} KnownNormalizedStatsOptions
- * @property {string} context
- * @property {RequestShortener} requestShortener
- * @property {string} chunksSort
- * @property {string} modulesSort
- * @property {string} chunkModulesSort
- * @property {string} nestedModulesSort
- * @property {string} assetsSort
- * @property {boolean} ids
- * @property {boolean} cachedAssets
- * @property {boolean} groupAssetsByEmitStatus
- * @property {boolean} groupAssetsByPath
- * @property {boolean} groupAssetsByExtension
- * @property {number} assetsSpace
- * @property {((value: string, asset: StatsAsset) => boolean)[]} excludeAssets
- * @property {((name: string, module: StatsModule, type: "module" | "chunk" | "root-of-chunk" | "nested") => boolean)[]} excludeModules
- * @property {((warning: StatsError, textValue: string) => boolean)[]} warningsFilter
- * @property {boolean} cachedModules
- * @property {boolean} orphanModules
- * @property {boolean} dependentModules
- * @property {boolean} runtimeModules
- * @property {boolean} groupModulesByCacheStatus
- * @property {boolean} groupModulesByLayer
- * @property {boolean} groupModulesByAttributes
- * @property {boolean} groupModulesByPath
- * @property {boolean} groupModulesByExtension
- * @property {boolean} groupModulesByType
- * @property {boolean | "auto"} entrypoints
- * @property {boolean} chunkGroups
- * @property {boolean} chunkGroupAuxiliary
- * @property {boolean} chunkGroupChildren
- * @property {number} chunkGroupMaxAssets
- * @property {number} modulesSpace
- * @property {number} chunkModulesSpace
- * @property {number} nestedModulesSpace
- * @property {false|"none"|"error"|"warn"|"info"|"log"|"verbose"} logging
- * @property {((value: string) => boolean)[]} loggingDebug
- * @property {boolean} loggingTrace
- * @property {any} _env
- */
-
-/** @typedef {KnownNormalizedStatsOptions & Omit<StatsOptions, keyof KnownNormalizedStatsOptions> & Record<string, any>} NormalizedStatsOptions */
-
-/**
- * @typedef {Object} KnownCreateStatsOptionsContext
- * @property {boolean=} forToString
- */
-
-/** @typedef {KnownCreateStatsOptionsContext & Record<string, any>} CreateStatsOptionsContext */
-
-/** @type {AssetInfo} */
 const EMPTY_ASSET_INFO = Object.freeze({})
 
 const esmDependencyCategory = 'esm'
@@ -386,18 +124,11 @@ const byLocation = compareSelect(err => err.loc, compareLocations)
 
 const compareErrors = concatComparators(byModule, byLocation, byMessage)
 
-/** @type {WeakMap<Dependency, Module & { restoreFromUnsafeCache: Function } | null>} */
 const unsafeCacheDependencies = new WeakMap()
 
-/** @type {WeakMap<Module & { restoreFromUnsafeCache: Function }, object>} */
 const unsafeCacheData = new WeakMap()
 
 class Compilation {
-    /**
-     * Creates an instance of Compilation.
-     * @param {Compiler} compiler the compiler which created the compilation
-     * @param {CompilationParams} params the compilation parameters
-     */
     constructor(compiler, params) {
         this._backCompat = compiler._backCompat
 
@@ -501,14 +232,6 @@ class Compilation {
 
         const afterProcessAssetsHook = new SyncHook(['assets'])
 
-        /**
-         * @template T
-         * @param {string} name name of the hook
-         * @param {number} stage new stage
-         * @param {function(): AsArray<T>} getArgs get old hook function args
-         * @param {string=} code deprecation code (not deprecated when unset)
-         * @returns {FakeHook<Pick<AsyncSeriesHook<T>, "tap" | "tapAsync" | "tapPromise" | "name">>} fake hook which redirects
-         */
         const createProcessAssetsHook = (name, stage, getArgs, code) => {
             if (!this._backCompat && code) return undefined
             const errorMessage = reason => `Can't automatically convert plugin using Compilation.hooks.${name} to Compilation.hooks.processAssets because ${reason}.
@@ -630,7 +353,6 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             shouldGenerateChunkAssets: new SyncBailHook([]),
             beforeChunkAssets: new SyncHook([]),
             // TODO webpack 6 remove
-            /** @deprecated */
             additionalChunkAssets: createProcessAssetsHook(
                 'additionalChunkAssets',
                 Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
@@ -642,7 +364,6 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             /** @deprecated */
             additionalAssets: createProcessAssetsHook('additionalAssets', Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL, () => []),
             // TODO webpack 6 remove
-            /** @deprecated */
             optimizeChunkAssets: createProcessAssetsHook(
                 'optimizeChunkAssets',
                 Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE,
@@ -650,7 +371,6 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                 'DEP_WEBPACK_COMPILATION_OPTIMIZE_CHUNK_ASSETS'
             ),
             // TODO webpack 6 remove
-            /** @deprecated */
             afterOptimizeChunkAssets: createProcessAssetsHook(
                 'afterOptimizeChunkAssets',
                 Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE + 1,
@@ -717,11 +437,9 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                 return getNormalModuleLoader()
             }
         })
-        /** @type {string=} */
         this.name = undefined
         this.startTime = undefined
         this.endTime = undefined
-        /** @type {Compiler} */
         this.compiler = compiler
         this.resolverFactory = compiler.resolverFactory
         this.inputFileSystem = compiler.inputFileSystem
@@ -804,17 +522,9 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             processor: this._rebuildModule.bind(this)
         })
 
-        /**
-         * Modules in value are building during the build of Module in key.
-         * Means value blocking key from finishing.
-         * Needed to detect build cycles.
-         * @type {WeakMap<Module, Set<Module>>}
-         */
         this.creatingModuleDuringBuild = new WeakMap()
 
-        /** @type {Map<string, EntryData>} */
         this.entries = new Map()
-        /** @type {EntryData} */
         this.globalEntry = {
             dependencies: [],
             includeDependencies: [],
@@ -4464,32 +4174,9 @@ This prevents using hashes of each other and should be avoided.`)
     }
 }
 
-/**
- * @typedef {Object} FactorizeModuleOptions
- * @property {ModuleProfile} currentProfile
- * @property {ModuleFactory} factory
- * @property {Dependency[]} dependencies
- * @property {boolean=} factoryResult return full ModuleFactoryResult instead of only module
- * @property {Module | null} originModule
- * @property {Partial<ModuleFactoryCreateDataContextInfo>=} contextInfo
- * @property {string=} context
- */
-
-/**
- * @param {FactorizeModuleOptions} options options object
- * @param {ModuleCallback | ModuleFactoryResultCallback} callback callback
- * @returns {void}
- */
-
-// Workaround for typescript as it doesn't support function overloading in jsdoc within a class
-Compilation.prototype.factorizeModule = /** @type {{
-	(options: FactorizeModuleOptions & { factoryResult?: false }, callback: ModuleCallback): void;
-	(options: FactorizeModuleOptions & { factoryResult: true }, callback: ModuleFactoryResultCallback): void;
-}} */ (
-    function (options, callback) {
-        this.factorizeQueue.add(options, callback)
-    }
-)
+Compilation.prototype.factorizeModule = function (options, callback) {
+    this.factorizeQueue.add(options, callback)
+}
 
 // Hide from typescript
 const compilationPrototype = Compilation.prototype

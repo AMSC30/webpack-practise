@@ -55,10 +55,13 @@ const createMultiCompiler = (childOptions, options) => {
 const createCompiler = rawOptions => {
     const options = getNormalizedWebpackOptions(rawOptions)
     applyWebpackOptionsBaseDefaults(options)
+
     const compiler = new Compiler(options.context, options)
+
     new NodeEnvironmentPlugin({
         infrastructureLogging: options.infrastructureLogging
     }).apply(compiler)
+
     // 配置的自定义插件
     if (Array.isArray(options.plugins)) {
         for (const plugin of options.plugins) {
@@ -71,10 +74,6 @@ const createCompiler = rawOptions => {
     }
     // 初始化配置
     applyWebpackOptionsDefaults(options)
-
-    // 第一次触发钩子，自定义插件可以触发
-    compiler.hooks.environment.call()
-    compiler.hooks.afterEnvironment.call()
 
     // 根据配置初始化默认插件
     new WebpackOptionsApply().process(options, compiler)

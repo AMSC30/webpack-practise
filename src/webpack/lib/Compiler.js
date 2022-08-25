@@ -28,55 +28,6 @@ const { join, dirname, mkdirp } = require('./util/fs')
 const { makePathsRelative } = require('./util/identifier')
 const { isSourceEqual } = require('./util/source')
 
-/** @typedef {import("webpack-sources").Source} Source */
-/** @typedef {import("../declarations/WebpackOptions").EntryNormalized} Entry */
-/** @typedef {import("../declarations/WebpackOptions").OutputNormalized} OutputOptions */
-/** @typedef {import("../declarations/WebpackOptions").WatchOptions} WatchOptions */
-/** @typedef {import("../declarations/WebpackOptions").WebpackOptionsNormalized} WebpackOptions */
-/** @typedef {import("../declarations/WebpackOptions").WebpackPluginInstance} WebpackPluginInstance */
-/** @typedef {import("./Chunk")} Chunk */
-/** @typedef {import("./Dependency")} Dependency */
-/** @typedef {import("./FileSystemInfo").FileSystemInfoEntry} FileSystemInfoEntry */
-/** @typedef {import("./Module")} Module */
-/** @typedef {import("./util/WeakTupleMap")} WeakTupleMap */
-/** @typedef {import("./util/fs").InputFileSystem} InputFileSystem */
-/** @typedef {import("./util/fs").IntermediateFileSystem} IntermediateFileSystem */
-/** @typedef {import("./util/fs").OutputFileSystem} OutputFileSystem */
-/** @typedef {import("./util/fs").WatchFileSystem} WatchFileSystem */
-
-/**
- * @typedef {Object} CompilationParams
- * @property {NormalModuleFactory} normalModuleFactory
- * @property {ContextModuleFactory} contextModuleFactory
- */
-
-/**
- * @template T
- * @callback Callback
- * @param {(Error | null)=} err
- * @param {T=} result
- */
-
-/**
- * @callback RunAsChildCallback
- * @param {(Error | null)=} err
- * @param {Chunk[]=} entries
- * @param {Compilation=} compilation
- */
-
-/**
- * @typedef {Object} AssetEmittedInfo
- * @property {Buffer} content
- * @property {Source} source
- * @property {Compilation} compilation
- * @property {string} outputPath
- * @property {string} targetPath
- */
-
-/**
- * @param {string[]} array an array
- * @returns {boolean} true, if the array is sorted
- */
 const isSorted = array => {
     for (let i = 1; i < array.length; i++) {
         if (array[i - 1] > array[i]) return false
@@ -84,11 +35,6 @@ const isSorted = array => {
     return true
 }
 
-/**
- * @param {Object} obj an object
- * @param {string[]} keys the keys of the object
- * @returns {Object} the object with properties sorted by property name
- */
 const sortObject = (obj, keys) => {
     const o = {}
     for (const k of keys.sort()) {
@@ -97,11 +43,6 @@ const sortObject = (obj, keys) => {
     return o
 }
 
-/**
- * @param {string} filename filename
- * @param {string | string[] | undefined} hashes list of hashes
- * @returns {boolean} true, if the filename contains any hash
- */
 const includesHash = (filename, hashes) => {
     if (!hashes) return false
     if (Array.isArray(hashes)) {
@@ -112,10 +53,6 @@ const includesHash = (filename, hashes) => {
 }
 
 class Compiler {
-    /**
-     * @param {string} context the compilation path
-     * @param {WebpackOptions} options options
-     */
     constructor(context, options = {}) {
         // 初始化各种hooks，主要为同步和异步串行hook
         this.hooks = Object.freeze({
@@ -1005,10 +942,6 @@ ${other}`)
         return params
     }
 
-    /**
-     * @param {Callback<Compilation>} callback signals when the compilation finishes
-     * @returns {void}
-     */
     compile(callback) {
         const params = this.newCompilationParams()
         this.hooks.beforeCompile.callAsync(params, err => {
