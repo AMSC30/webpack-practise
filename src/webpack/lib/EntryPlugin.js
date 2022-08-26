@@ -18,13 +18,15 @@ class EntryPlugin {
     }
 
     apply(compiler) {
+        // 将入口对象和模块对象的创建方法挂载到compilation上
         compiler.hooks.compilation.tap('EntryPlugin', (compilation, { normalModuleFactory }) => {
             compilation.dependencyFactories.set(EntryDependency, normalModuleFactory)
         })
 
         const { entry, options, context } = this
         const dep = EntryPlugin.createDependency(entry, options)
-
+        console.log(dep)
+        debugger
         compiler.hooks.make.tapAsync('EntryPlugin', (compilation, callback) => {
             compilation.addEntry(context, dep, options, err => {
                 callback(err)

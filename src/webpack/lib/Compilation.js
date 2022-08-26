@@ -1506,6 +1506,7 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
      * @returns {void} returns
      */
     addEntry(context, entry, optionsOrName, callback) {
+        debugger
         // TODO webpack 6 remove
         const options = typeof optionsOrName === 'object' ? optionsOrName : { name: optionsOrName }
 

@@ -37,6 +37,9 @@ class EntryOptionPlugin {
             for (const name of Object.keys(entry)) {
                 const desc = entry[name]
                 const options = EntryOptionPlugin.entryDescriptionToOptions(compiler, name, desc)
+
+                console.log(options)
+                debugger
                 for (const entry of desc.import) {
                     new EntryPlugin(context, entry, options).apply(compiler)
                 }
