@@ -1468,7 +1468,7 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
         if (typeof dependency !== 'object' || dependency === null || !dependency.constructor) {
             return callback(new WebpackError("Parameter 'dependency' must be a Dependency"))
         }
-        const Dep = /** @type {DepConstructor} */ (dependency.constructor)
+        const Dep = dependency.constructor
         const moduleFactory = this.dependencyFactories.get(Dep)
         if (!moduleFactory) {
             return callback(new WebpackError(`No dependency factory available for this dependency type: ${dependency.constructor.name}`))
@@ -1506,8 +1506,6 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
      * @returns {void} returns
      */
     addEntry(context, entry, optionsOrName, callback) {
-        debugger
-        // TODO webpack 6 remove
         const options = typeof optionsOrName === 'object' ? optionsOrName : { name: optionsOrName }
 
         this._addEntryItem(context, entry, 'dependencies', options, callback)
@@ -1563,6 +1561,7 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
         }
 
         this.hooks.addEntry.call(entry, options)
+        debugger
 
         this.addModuleTree(
             {

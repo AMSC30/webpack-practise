@@ -25,8 +25,6 @@ class EntryPlugin {
 
         const { entry, options, context } = this
         const dep = EntryPlugin.createDependency(entry, options)
-        console.log(dep)
-        debugger
         compiler.hooks.make.tapAsync('EntryPlugin', (compilation, callback) => {
             compilation.addEntry(context, dep, options, err => {
                 callback(err)

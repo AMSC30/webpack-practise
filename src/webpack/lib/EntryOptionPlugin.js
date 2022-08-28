@@ -22,12 +22,6 @@ class EntryOptionPlugin {
         })
     }
 
-    /**
-     * @param {Compiler} compiler the compiler
-     * @param {string} context context directory
-     * @param {Entry} entry request
-     * @returns {void}
-     */
     static applyEntryOption(compiler, context, entry) {
         if (typeof entry === 'function') {
             const DynamicEntryPlugin = require('./DynamicEntryPlugin')
@@ -38,8 +32,6 @@ class EntryOptionPlugin {
                 const desc = entry[name]
                 const options = EntryOptionPlugin.entryDescriptionToOptions(compiler, name, desc)
 
-                console.log(options)
-                debugger
                 for (const entry of desc.import) {
                     new EntryPlugin(context, entry, options).apply(compiler)
                 }
@@ -47,14 +39,7 @@ class EntryOptionPlugin {
         }
     }
 
-    /**
-     * @param {Compiler} compiler the compiler
-     * @param {string} name entry name
-     * @param {EntryDescription} desc entry description
-     * @returns {EntryOptions} options for the entry
-     */
     static entryDescriptionToOptions(compiler, name, desc) {
-        /** @type {EntryOptions} */
         const options = {
             name,
             filename: desc.filename,
