@@ -1240,6 +1240,8 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                 context
             },
             (err, factoryResult) => {
+                console.log(factoryResult)
+                // debugger
                 const applyFactoryResultDependencies = () => {
                     const { fileDependencies, contextDependencies, missingDependencies } = factoryResult
                     if (fileDependencies) {
@@ -1490,6 +1492,8 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                     this.processDependenciesQueue.stop()
                     this.factorizeQueue.stop()
                 } else if (!err && result) {
+                    console.log('handleModuleCreation的回调')
+                    // debugger
                     callback(null, result)
                 } else {
                     callback()
@@ -1498,13 +1502,6 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
         )
     }
 
-    /**
-     * @param {string} context context path for entry
-     * @param {Dependency} entry entry dependency that should be followed
-     * @param {string | EntryOptions} optionsOrName options or deprecated name of entry
-     * @param {ModuleCallback} callback callback function
-     * @returns {void} returns
-     */
     addEntry(context, entry, optionsOrName, callback) {
         const options = typeof optionsOrName === 'object' ? optionsOrName : { name: optionsOrName }
 
@@ -1559,9 +1556,8 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                 }
             }
         }
-
-        this.hooks.addEntry.call(entry, options)
         debugger
+        this.hooks.addEntry.call(entry, options)
 
         this.addModuleTree(
             {
@@ -1574,6 +1570,7 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                     this.hooks.failedEntry.call(entry, options, err)
                     return callback(err)
                 }
+                console.log('addModuleTree的回调')
                 this.hooks.succeedEntry.call(entry, options, module)
                 return callback(null, module)
             }
