@@ -112,8 +112,6 @@ class AsyncQueue {
                 callback(makeWebpackError(err, `AsyncQueue(${this._name}).hooks.beforeAdd`))
                 return
             }
-            console.log(item)
-            debugger
             const key = this._getKey(item)
             const entry = this._entries.get(key)
             if (entry !== undefined) {
@@ -290,6 +288,7 @@ class AsyncQueue {
             }
             let inCallback = false
             try {
+                //compilation中的 _factorizeModule方法
                 this._processor(entry.item, (e, r) => {
                     inCallback = true
                     this._handleResult(entry, e, r)

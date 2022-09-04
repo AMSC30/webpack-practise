@@ -19,9 +19,9 @@ const ContextModuleFactory = require('./ContextModuleFactory')
 const ModuleGraph = require('./ModuleGraph')
 const NormalModuleFactory = require('./NormalModuleFactory')
 const RequestShortener = require('./RequestShortener')
+const Watching = require('./Watching')
 const ResolverFactory = require('./ResolverFactory')
 const Stats = require('./Stats')
-const Watching = require('./Watching')
 const WebpackError = require('./WebpackError')
 const { Logger } = require('./logging/Logger')
 const { join, dirname, mkdirp } = require('./util/fs')
@@ -368,7 +368,6 @@ class Compiler {
 
                 this.hooks.run.callAsync(this, err => {
                     if (err) return finalCallback(err)
-
                     this.readRecords(err => {
                         if (err) return finalCallback(err)
 
@@ -951,7 +950,6 @@ ${other}`)
 
             // compile后创建compilation
             const compilation = this.newCompilation(params)
-
             const logger = compilation.getLogger('webpack.Compiler')
 
             logger.time('make hook')

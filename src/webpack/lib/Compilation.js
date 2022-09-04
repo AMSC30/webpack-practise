@@ -515,7 +515,6 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             parent: this.factorizeQueue,
             processor: this._buildModule.bind(this)
         })
-        /** @type {AsyncQueue<Module, Module, Module>} */
         this.rebuildQueue = new AsyncQueue({
             name: 'rebuild',
             parallelism: options.parallelism || 100,
@@ -532,13 +531,9 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                 name: undefined
             }
         }
-        /** @type {Map<string, Entrypoint>} */
         this.entrypoints = new Map()
-        /** @type {Entrypoint[]} */
         this.asyncEntrypoints = []
-        /** @type {Set<Chunk>} */
         this.chunks = new Set()
-        /** @type {ChunkGroup[]} */
         this.chunkGroups = []
         /** @type {Map<string, ChunkGroup>} */
         this.namedChunkGroups = new Map()
@@ -871,6 +866,7 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
      * @returns {void}
      */
     _buildModule(module, callback) {
+        // debugger
         const currentProfile = this.profile ? this.moduleGraph.getProfile(module) : undefined
         if (currentProfile !== undefined) {
             currentProfile.markBuildingStart()
@@ -1241,7 +1237,7 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             },
             (err, factoryResult) => {
                 console.log(factoryResult)
-                // debugger
+                debugger
                 const applyFactoryResultDependencies = () => {
                     const { fileDependencies, contextDependencies, missingDependencies } = factoryResult
                     if (fileDependencies) {
@@ -1394,6 +1390,7 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
      * @returns {void}
      */
     _factorizeModule({ currentProfile, factory, dependencies, originModule, factoryResult, contextInfo, context }, callback) {
+        // debugger
         if (currentProfile !== undefined) {
             currentProfile.markFactoryStart()
         }
@@ -1471,7 +1468,10 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             return callback(new WebpackError("Parameter 'dependency' must be a Dependency"))
         }
         const Dep = dependency.constructor
+
+        // 提前通过插件注入到compilation上
         const moduleFactory = this.dependencyFactories.get(Dep)
+
         if (!moduleFactory) {
             return callback(new WebpackError(`No dependency factory available for this dependency type: ${dependency.constructor.name}`))
         }
@@ -1556,7 +1556,7 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                 }
             }
         }
-        debugger
+        // debugger
         this.hooks.addEntry.call(entry, options)
 
         this.addModuleTree(
