@@ -85,11 +85,6 @@ module.exports = class ResolverFactory {
 		this.cache = new Map();
 	}
 
-	/**
-	 * @param {string} type type of resolver
-	 * @param {ResolveOptionsWithDependencyType=} resolveOptions options
-	 * @returns {ResolverWithOptions} the resolver
-	 */
 	get(type, resolveOptions = EMPTY_RESOLVE_OPTIONS) {
 		let typedCaches = this.cache.get(type);
 		if (!typedCaches) {
@@ -121,19 +116,17 @@ module.exports = class ResolverFactory {
 	 * @returns {ResolverWithOptions} the resolver
 	 */
 	_create(type, resolveOptionsWithDepType) {
-		/** @type {ResolveOptionsWithDependencyType} */
 		const originalResolveOptions = { ...resolveOptionsWithDepType };
 
 		const resolveOptions = convertToResolveOptions(
 			this.hooks.resolveOptions.for(type).call(resolveOptionsWithDepType)
 		);
-		const resolver = /** @type {ResolverWithOptions} */ (
-			Factory.createResolver(resolveOptions)
-		);
+		const resolver =  Factory.createResolver(resolveOptions);
+
 		if (!resolver) {
 			throw new Error("No resolver created");
 		}
-		/** @type {WeakMap<Partial<ResolveOptionsWithDependencyType>, ResolverWithOptions>} */
+		
 		const childCache = new WeakMap();
 		resolver.withOptions = options => {
 			const cacheEntry = childCache.get(options);

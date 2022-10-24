@@ -149,7 +149,7 @@ const applyWebpackOptionsDefaults = options => {
 			F(
 				options.entry[key],
 				"import",
-				() => /** @type {[string]} */ (["./src"])
+				() => ["./src"]
 			);
 		}
 	}

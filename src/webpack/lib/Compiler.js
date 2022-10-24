@@ -953,6 +953,8 @@ ${other}`)
             const logger = compilation.getLogger('webpack.Compiler')
 
             logger.time('make hook')
+            
+            // make上钩子回调会执行compilation上的addEntry方法
             this.hooks.make.callAsync(compilation, err => {
                 logger.timeEnd('make hook')
                 if (err) return callback(err)

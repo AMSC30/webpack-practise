@@ -866,7 +866,6 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
      * @returns {void}
      */
     _buildModule(module, callback) {
-        // debugger
         const currentProfile = this.profile ? this.moduleGraph.getProfile(module) : undefined
         if (currentProfile !== undefined) {
             currentProfile.markBuildingStart()
@@ -1223,6 +1222,7 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
     handleModuleCreation({ factory, dependencies, originModule, contextInfo, context, recursive = true, connectOrigin = recursive }, callback) {
         const moduleGraph = this.moduleGraph
 
+        // 记录各种时间
         const currentProfile = this.profile ? new ModuleProfile() : undefined
 
         this.factorizeModule(
@@ -1237,7 +1237,6 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             },
             (err, factoryResult) => {
                 console.log(factoryResult)
-                debugger
                 const applyFactoryResultDependencies = () => {
                     const { fileDependencies, contextDependencies, missingDependencies } = factoryResult
                     if (fileDependencies) {
@@ -1384,13 +1383,7 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
         })
     }
 
-    /**
-     * @param {FactorizeModuleOptions} options options object
-     * @param {ModuleOrFactoryResultCallback} callback callback
-     * @returns {void}
-     */
     _factorizeModule({ currentProfile, factory, dependencies, originModule, factoryResult, contextInfo, context }, callback) {
-        // debugger
         if (currentProfile !== undefined) {
             currentProfile.markFactoryStart()
         }
@@ -1493,7 +1486,6 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                     this.factorizeQueue.stop()
                 } else if (!err && result) {
                     console.log('handleModuleCreation的回调')
-                    // debugger
                     callback(null, result)
                 } else {
                     callback()
@@ -1556,7 +1548,6 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                 }
             }
         }
-        // debugger
         this.hooks.addEntry.call(entry, options)
 
         this.addModuleTree(

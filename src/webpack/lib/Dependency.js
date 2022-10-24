@@ -87,17 +87,10 @@ const getIgnoredModule = memoize(() => {
 
 class Dependency {
 	constructor() {
-		/** @type {Module} */
 		this._parentModule = undefined;
-		/** @type {DependenciesBlock} */
 		this._parentDependenciesBlock = undefined;
-		/** @type {number} */
 		this._parentDependenciesBlockIndex = -1;
-		// TODO check if this can be moved into ModuleDependency
-		/** @type {boolean} */
 		this.weak = false;
-		// TODO check if this can be moved into ModuleDependency
-		/** @type {boolean} */
 		this.optional = false;
 		this._locSL = 0;
 		this._locSC = 0;
@@ -108,26 +101,19 @@ class Dependency {
 		this._loc = undefined;
 	}
 
-	/**
-	 * @returns {string} a display name for the type of dependency
-	 */
+	
 	get type() {
 		return "unknown";
 	}
 
-	/**
-	 * @returns {string} a dependency category, typical categories are "commonjs", "amd", "esm"
-	 */
+	
 	get category() {
 		return "unknown";
 	}
 
-	/**
-	 * @returns {DependencyLocation} location
-	 */
+	
 	get loc() {
 		if (this._loc !== undefined) return this._loc;
-		/** @type {SyntheticDependencyLocation & RealDependencyLocation} */
 		const loc = {};
 		if (this._locSL > 0) {
 			loc.start = { line: this._locSL, column: this._locSC };
@@ -182,112 +168,64 @@ class Dependency {
 		this._loc = undefined;
 	}
 
-	/**
-	 * @returns {string | undefined} a request context
-	 */
+	
 	getContext() {
 		return undefined;
 	}
 
-	/**
-	 * @returns {string | null} an identifier to merge equal requests
-	 */
 	getResourceIdentifier() {
 		return null;
 	}
 
-	/**
-	 * @returns {boolean | TRANSITIVE} true, when changes to the referenced module could affect the referencing module; TRANSITIVE, when changes to the referenced module could affect referencing modules of the referencing module
-	 */
+	 
 	couldAffectReferencingModule() {
 		return TRANSITIVE;
 	}
 
-	/**
-	 * Returns the referenced module and export
-	 * @deprecated
-	 * @param {ModuleGraph} moduleGraph module graph
-	 * @returns {never} throws error
-	 */
+	
 	getReference(moduleGraph) {
 		throw new Error(
 			"Dependency.getReference was removed in favor of Dependency.getReferencedExports, ModuleGraph.getModule and ModuleGraph.getConnection().active"
 		);
 	}
 
-	/**
-	 * Returns list of exports referenced by this dependency
-	 * @param {ModuleGraph} moduleGraph module graph
-	 * @param {RuntimeSpec} runtime the runtime for which the module is analysed
-	 * @returns {(string[] | ReferencedExport)[]} referenced exports
-	 */
+	
 	getReferencedExports(moduleGraph, runtime) {
 		return Dependency.EXPORTS_OBJECT_REFERENCED;
 	}
 
-	/**
-	 * @param {ModuleGraph} moduleGraph module graph
-	 * @returns {null | false | function(ModuleGraphConnection, RuntimeSpec): ConnectionState} function to determine if the connection is active
-	 */
+	
 	getCondition(moduleGraph) {
 		return null;
 	}
-
-	/**
-	 * Returns the exported names
-	 * @param {ModuleGraph} moduleGraph module graph
-	 * @returns {ExportsSpec | undefined} export names
-	 */
 	getExports(moduleGraph) {
 		return undefined;
 	}
 
-	/**
-	 * Returns warnings
-	 * @param {ModuleGraph} moduleGraph module graph
-	 * @returns {WebpackError[]} warnings
-	 */
+	
 	getWarnings(moduleGraph) {
 		return null;
 	}
 
-	/**
-	 * Returns errors
-	 * @param {ModuleGraph} moduleGraph module graph
-	 * @returns {WebpackError[]} errors
-	 */
+	
 	getErrors(moduleGraph) {
 		return null;
 	}
 
-	/**
-	 * Update the hash
-	 * @param {Hash} hash hash to be updated
-	 * @param {UpdateHashContext} context context
-	 * @returns {void}
-	 */
+	
 	updateHash(hash, context) {}
 
-	/**
-	 * implement this method to allow the occurrence order plugin to count correctly
-	 * @returns {number} count how often the id is used in this dependency
-	 */
+	
 	getNumberOfIdOccurrences() {
 		return 1;
 	}
 
-	/**
-	 * @param {ModuleGraph} moduleGraph the module graph
-	 * @returns {ConnectionState} how this dependency connects the module to referencing modules
-	 */
+	
 	getModuleEvaluationSideEffectsState(moduleGraph) {
 		return true;
 	}
 
-	/**
-	 * @param {string} context context directory
-	 * @returns {Module} a module
-	 */
+	
 	createIgnoredModule(context) {
 		return getIgnoredModule();
 	}

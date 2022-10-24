@@ -1,8 +1,3 @@
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-
 "use strict";
 
 const { getContext } = require("loader-runner");
@@ -32,52 +27,6 @@ const {
 	parseResource,
 	parseResourceWithoutFragment
 } = require("./util/identifier");
-
-/** @typedef {import("../declarations/WebpackOptions").ModuleOptionsNormalized} ModuleOptions */
-/** @typedef {import("../declarations/WebpackOptions").RuleSetRule} RuleSetRule */
-/** @typedef {import("./Generator")} Generator */
-/** @typedef {import("./ModuleFactory").ModuleFactoryCreateData} ModuleFactoryCreateData */
-/** @typedef {import("./ModuleFactory").ModuleFactoryResult} ModuleFactoryResult */
-/** @typedef {import("./NormalModule").NormalModuleCreateData} NormalModuleCreateData */
-/** @typedef {import("./Parser")} Parser */
-/** @typedef {import("./ResolverFactory")} ResolverFactory */
-/** @typedef {import("./dependencies/ModuleDependency")} ModuleDependency */
-/** @typedef {import("./util/fs").InputFileSystem} InputFileSystem */
-
-/** @typedef {Pick<RuleSetRule, 'type'|'sideEffects'|'parser'|'generator'|'resolve'|'layer'>} ModuleSettings */
-/** @typedef {Partial<NormalModuleCreateData & {settings: ModuleSettings}>} CreateData */
-
-/**
- * @typedef {Object} ResolveData
- * @property {ModuleFactoryCreateData["contextInfo"]} contextInfo
- * @property {ModuleFactoryCreateData["resolveOptions"]} resolveOptions
- * @property {string} context
- * @property {string} request
- * @property {Record<string, any> | undefined} assertions
- * @property {ModuleDependency[]} dependencies
- * @property {string} dependencyType
- * @property {CreateData} createData
- * @property {LazySet<string>} fileDependencies
- * @property {LazySet<string>} missingDependencies
- * @property {LazySet<string>} contextDependencies
- * @property {boolean} cacheable allow to use the unsafe cache
- */
-
-/**
- * @typedef {Object} ResourceData
- * @property {string} resource
- * @property {string} path
- * @property {string} query
- * @property {string} fragment
- * @property {string=} context
- */
-
-/** @typedef {ResourceData & { data: Record<string, any> }} ResourceDataWithData */
-
-/** @typedef {Object} ParsedLoaderRequest
- * @property {string} loader loader
- * @property {string|undefined} options options
- */
 
 const EMPTY_RESOLVE_OPTIONS = {};
 const EMPTY_PARSER_OPTIONS = {};
@@ -185,15 +134,6 @@ const ruleSetCompiler = new RuleSetCompiler([
 ]);
 
 class NormalModuleFactory extends ModuleFactory {
-	/**
-	 * @param {Object} param params
-	 * @param {string=} param.context context
-	 * @param {InputFileSystem} param.fs file system
-	 * @param {ResolverFactory} param.resolverFactory resolverFactory
-	 * @param {ModuleOptions} param.options options
-	 * @param {Object=} param.associatedObjectForCache an object to which the cache will be attached
-	 * @param {boolean=} param.layers enable layers
-	 */
 	constructor({
 		context,
 		fs,
@@ -204,25 +144,18 @@ class NormalModuleFactory extends ModuleFactory {
 	}) {
 		super();
 		this.hooks = Object.freeze({
-			/** @type {AsyncSeriesBailHook<[ResolveData], Module | false | void>} */
 			resolve: new AsyncSeriesBailHook(["resolveData"]),
-			/** @type {HookMap<AsyncSeriesBailHook<[ResourceDataWithData, ResolveData], true | void>>} */
 			resolveForScheme: new HookMap(
 				() => new AsyncSeriesBailHook(["resourceData", "resolveData"])
 			),
-			/** @type {HookMap<AsyncSeriesBailHook<[ResourceDataWithData, ResolveData], true | void>>} */
 			resolveInScheme: new HookMap(
 				() => new AsyncSeriesBailHook(["resourceData", "resolveData"])
 			),
-			/** @type {AsyncSeriesBailHook<[ResolveData], Module>} */
+			
 			factorize: new AsyncSeriesBailHook(["resolveData"]),
-			/** @type {AsyncSeriesBailHook<[ResolveData], false | void>} */
 			beforeResolve: new AsyncSeriesBailHook(["resolveData"]),
-			/** @type {AsyncSeriesBailHook<[ResolveData], false | void>} */
 			afterResolve: new AsyncSeriesBailHook(["resolveData"]),
-			/** @type {AsyncSeriesBailHook<[ResolveData["createData"], ResolveData], Module | void>} */
 			createModule: new AsyncSeriesBailHook(["createData", "resolveData"]),
-			/** @type {SyncWaterfallHook<[Module, ResolveData["createData"], ResolveData], Module>} */
 			module: new SyncWaterfallHook(["module", "createData", "resolveData"]),
 			createParser: new HookMap(() => new SyncBailHook(["parserOptions"])),
 			parser: new HookMap(() => new SyncHook(["parser", "parserOptions"])),
@@ -246,11 +179,8 @@ class NormalModuleFactory extends ModuleFactory {
 		this.fs = fs;
 		this._globalParserOptions = options.parser;
 		this._globalGeneratorOptions = options.generator;
-		/** @type {Map<string, WeakMap<Object, TODO>>} */
 		this.parserCache = new Map();
-		/** @type {Map<string, WeakMap<Object, Generator>>} */
 		this.generatorCache = new Map();
-		/** @type {Set<Module>} */
 		this._restoredUnsafeCacheEntries = new Set();
 
 		const cacheParseResource = parseResource.bindCache(
@@ -330,6 +260,7 @@ class NormalModuleFactory extends ModuleFactory {
 				stage: 100
 			},
 			(data, callback) => {
+				debugger
 				const {
 					contextInfo,
 					context,
@@ -342,24 +273,20 @@ class NormalModuleFactory extends ModuleFactory {
 					missingDependencies,
 					contextDependencies
 				} = data;
+
 				const loaderResolver = this.getResolver("loader");
 
-				/** @type {ResourceData | undefined} */
 				let matchResourceData = undefined;
-				/** @type {string} */
 				let unresolvedResource;
-				/** @type {ParsedLoaderRequest[]} */
 				let elements;
 				let noPreAutoLoaders = false;
 				let noAutoLoaders = false;
 				let noPrePostAutoLoaders = false;
 
 				const contextScheme = getScheme(context);
-				/** @type {string | undefined} */
 				let scheme = getScheme(request);
 
 				if (!scheme) {
-					/** @type {string} */
 					let requestWithoutMatchResource = request;
 					const matchResourceMatch = MATCH_RESOURCE_REGEX.exec(request);
 					if (matchResourceMatch) {
@@ -425,7 +352,6 @@ class NormalModuleFactory extends ModuleFactory {
 					contextDependencies
 				};
 
-				/** @type {ResourceDataWithData} */
 				let resourceData;
 
 				let loaders;
@@ -681,7 +607,6 @@ class NormalModuleFactory extends ModuleFactory {
 					}
 				};
 
-				// resource with scheme
 				if (scheme) {
 					resourceData = {
 						resource: unresolvedResource,
@@ -697,10 +622,7 @@ class NormalModuleFactory extends ModuleFactory {
 							if (err) return continueCallback(err);
 							continueCallback();
 						});
-				}
-
-				// resource within scheme
-				else if (contextScheme) {
+				}else if (contextScheme) {
 					resourceData = {
 						resource: unresolvedResource,
 						data: {},
@@ -716,10 +638,7 @@ class NormalModuleFactory extends ModuleFactory {
 							if (!handled) return defaultResolve(this.context);
 							continueCallback();
 						});
-				}
-
-				// resource without scheme and without path
-				else defaultResolve(context);
+				}else defaultResolve(context);
 			}
 		);
 	}
@@ -732,13 +651,8 @@ class NormalModuleFactory extends ModuleFactory {
 		}
 	}
 
-	/**
-	 * @param {ModuleFactoryCreateData} data data object
-	 * @param {function(Error=, ModuleFactoryResult=): void} callback callback
-	 * @returns {void}
-	 */
 	create(data, callback) {
-		const dependencies = /** @type {ModuleDependency[]} */ (data.dependencies);
+		const dependencies = data.dependencies;
 		const context = data.context || this.context;
 		const resolveOptions = data.resolveOptions || EMPTY_RESOLVE_OPTIONS;
 		const dependency = dependencies[0];
@@ -750,7 +664,6 @@ class NormalModuleFactory extends ModuleFactory {
 		const contextDependencies = new LazySet();
 		const dependencyType =
 			(dependencies.length > 0 && dependencies[0].category) || "";
-		/** @type {ResolveData} */
 		const resolveData = {
 			contextInfo,
 			resolveOptions,
@@ -775,7 +688,6 @@ class NormalModuleFactory extends ModuleFactory {
 				});
 			}
 
-			// Ignored
 			if (result === false) {
 				return callback(null, {
 					fileDependencies,
@@ -803,6 +715,7 @@ class NormalModuleFactory extends ModuleFactory {
 					});
 				}
 
+				// 解析成功会多一个module属性，表示解析出来的结果
 				const factoryResult = {
 					module,
 					fileDependencies,
@@ -1057,11 +970,7 @@ If changing the source code is not an option there is also a resolve options cal
 		return parser;
 	}
 
-	/**
-	 * @param {string} type type
-	 * @param {{[k: string]: any}} parserOptions parser options
-	 * @returns {Parser} parser
-	 */
+
 	createParser(type, parserOptions = {}) {
 		parserOptions = mergeGlobalOptions(
 			this._globalParserOptions,

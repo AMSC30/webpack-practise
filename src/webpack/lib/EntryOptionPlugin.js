@@ -1,43 +1,30 @@
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
 
 'use strict'
 
-/** @typedef {import("../declarations/WebpackOptions").EntryDescriptionNormalized} EntryDescription */
-/** @typedef {import("../declarations/WebpackOptions").EntryNormalized} Entry */
-/** @typedef {import("./Compiler")} Compiler */
-/** @typedef {import("./Entrypoint").EntryOptions} EntryOptions */
-
+// 插件挂插件的操作，通过在entryOption这个hook中获取到上下文和入口
+// 然后处理各个入口，为每一个入口挂载一个插件entryPlugin
 class EntryOptionPlugin {
-    /**
-     * @param {Compiler} compiler the compiler instance one is tapping into
-     * @returns {void}
-     */
+
     apply(compiler) {
         compiler.hooks.entryOption.tap('EntryOptionPlugin', (context, entry) => {
-            EntryOptionPlugin.applyEntryOption(compiler, context, entry)
+            if (typeof entry === 'function') {
+                const DynamicEntryPlugin = require('./DynamicEntryPlugin')
+                new DynamicEntryPlugin(context, entry).apply(compiler)
+            } else {
+                const EntryPlugin = require('./EntryPlugin')
+                for (const name of Object.keys(entry)) {
+                    const desc = entry[name]
+                    const options = EntryOptionPlugin.entryDescriptionToOptions(compiler, name, desc)
+
+                    for (const entry of desc.import) {
+                        new EntryPlugin(context, entry, options).apply(compiler)
+                    }
+                }
+            }
             return true
         })
     }
 
-    static applyEntryOption(compiler, context, entry) {
-        if (typeof entry === 'function') {
-            const DynamicEntryPlugin = require('./DynamicEntryPlugin')
-            new DynamicEntryPlugin(context, entry).apply(compiler)
-        } else {
-            const EntryPlugin = require('./EntryPlugin')
-            for (const name of Object.keys(entry)) {
-                const desc = entry[name]
-                const options = EntryOptionPlugin.entryDescriptionToOptions(compiler, name, desc)
-
-                for (const entry of desc.import) {
-                    new EntryPlugin(context, entry, options).apply(compiler)
-                }
-            }
-        }
-    }
 
     static entryDescriptionToOptions(compiler, name, desc) {
         const options = {
