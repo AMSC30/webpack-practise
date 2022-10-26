@@ -73,7 +73,6 @@ class WebpackOptionsApply extends OptionsApply {
             const ExternalsPlugin = require('./ExternalsPlugin')
             new ExternalsPlugin(options.externalsType, options.externals).apply(compiler)
         }
-
         if (options.externalsPresets.node) {
             const NodeTargetPlugin = require('./node/NodeTargetPlugin')
             new NodeTargetPlugin().apply(compiler)
@@ -116,11 +115,14 @@ class WebpackOptionsApply extends OptionsApply {
                 options.experiments.css
                     ? ({ request, dependencyType }, callback) => {
                           if (dependencyType === 'url') {
-                              if (/^(\/\/|https?:\/\/)/.test(request)) return callback(null, `asset ${request}`)
+                              if (/^(\/\/|https?:\/\/)/.test(request))
+                                  return callback(null, `asset ${request}`)
                           } else if (dependencyType === 'css-import') {
-                              if (/^(\/\/|https?:\/\/)/.test(request)) return callback(null, `css-import ${request}`)
+                              if (/^(\/\/|https?:\/\/)/.test(request))
+                                  return callback(null, `css-import ${request}`)
                           } else if (/^(\/\/|https?:\/\/|std:)/.test(request)) {
-                              if (/^\.css(\?|$)/.test(request)) return callback(null, `css-import ${request}`)
+                              if (/^\.css(\?|$)/.test(request))
+                                  return callback(null, `css-import ${request}`)
                               return callback(null, `import ${request}`)
                           }
                           callback()
@@ -135,11 +137,14 @@ class WebpackOptionsApply extends OptionsApply {
                 options.experiments.css
                     ? ({ request, dependencyType }, callback) => {
                           if (dependencyType === 'url') {
-                              if (/^(\/\/|https?:\/\/)/.test(request)) return callback(null, `asset ${request}`)
+                              if (/^(\/\/|https?:\/\/)/.test(request))
+                                  return callback(null, `asset ${request}`)
                           } else if (dependencyType === 'css-import') {
-                              if (/^(\/\/|https?:\/\/)/.test(request)) return callback(null, `css-import ${request}`)
+                              if (/^(\/\/|https?:\/\/)/.test(request))
+                                  return callback(null, `css-import ${request}`)
                           } else if (/^(\/\/|https?:\/\/|std:)/.test(request)) {
-                              if (/^\.css(\?|$)/.test(request)) return callback(null, `css-import ${request}`)
+                              if (/^\.css(\?|$)/.test(request))
+                                  return callback(null, `css-import ${request}`)
                               return callback(null, `module ${request}`)
                           }
                           callback()
@@ -168,7 +173,9 @@ class WebpackOptionsApply extends OptionsApply {
                     break
                 }
                 default:
-                    throw new Error("Unsupported chunk format '" + options.output.chunkFormat + "'.")
+                    throw new Error(
+                        "Unsupported chunk format '" + options.output.chunkFormat + "'."
+                    )
             }
         }
 
@@ -200,7 +207,9 @@ class WebpackOptionsApply extends OptionsApply {
 
         if (options.output.clean) {
             const CleanPlugin = require('./CleanPlugin')
-            new CleanPlugin(options.output.clean === true ? {} : options.output.clean).apply(compiler)
+            new CleanPlugin(options.output.clean === true ? {} : options.output.clean).apply(
+                compiler
+            )
         }
 
         if (options.devtool) {
@@ -211,11 +220,14 @@ class WebpackOptionsApply extends OptionsApply {
                 const cheap = options.devtool.includes('cheap')
                 const moduleMaps = options.devtool.includes('module')
                 const noSources = options.devtool.includes('nosources')
-                const Plugin = evalWrapped ? require('./EvalSourceMapDevToolPlugin') : require('./SourceMapDevToolPlugin')
+                const Plugin = evalWrapped
+                    ? require('./EvalSourceMapDevToolPlugin')
+                    : require('./SourceMapDevToolPlugin')
                 new Plugin({
                     filename: inline ? null : options.output.sourceMapFilename,
                     moduleFilenameTemplate: options.output.devtoolModuleFilenameTemplate,
-                    fallbackModuleFilenameTemplate: options.output.devtoolFallbackModuleFilenameTemplate,
+                    fallbackModuleFilenameTemplate:
+                        options.output.devtoolFallbackModuleFilenameTemplate,
                     append: hidden ? false : undefined,
                     module: moduleMaps ? true : cheap ? false : true,
                     columns: cheap ? false : true,
@@ -237,13 +249,19 @@ class WebpackOptionsApply extends OptionsApply {
 
         if (!options.experiments.outputModule) {
             if (options.output.module) {
-                throw new Error("'output.module: true' is only allowed when 'experiments.outputModule' is enabled")
+                throw new Error(
+                    "'output.module: true' is only allowed when 'experiments.outputModule' is enabled"
+                )
             }
             if (options.output.enabledLibraryTypes.includes('module')) {
-                throw new Error('library type "module" is only allowed when \'experiments.outputModule\' is enabled')
+                throw new Error(
+                    'library type "module" is only allowed when \'experiments.outputModule\' is enabled'
+                )
             }
             if (options.externalsType === 'module') {
-                throw new Error("'externalsType: \"module\"' is only allowed when 'experiments.outputModule' is enabled")
+                throw new Error(
+                    "'externalsType: \"module\"' is only allowed when 'experiments.outputModule' is enabled"
+                )
             }
         }
 
@@ -268,7 +286,10 @@ class WebpackOptionsApply extends OptionsApply {
 
         if (options.experiments.lazyCompilation) {
             const LazyCompilationPlugin = require('./hmr/LazyCompilationPlugin')
-            const lazyOptions = typeof options.experiments.lazyCompilation === 'object' ? options.experiments.lazyCompilation : null
+            const lazyOptions =
+                typeof options.experiments.lazyCompilation === 'object'
+                    ? options.experiments.lazyCompilation
+                    : null
             new LazyCompilationPlugin({
                 backend:
                     typeof lazyOptions.backend === 'function'
@@ -277,7 +298,11 @@ class WebpackOptionsApply extends OptionsApply {
                               ...lazyOptions.backend,
                               client:
                                   (lazyOptions.backend && lazyOptions.backend.client) ||
-                                  require.resolve(`../hot/lazy-compilation-${options.externalsPresets.node ? 'node' : 'web'}.js`)
+                                  require.resolve(
+                                      `../hot/lazy-compilation-${
+                                          options.externalsPresets.node ? 'node' : 'web'
+                                      }.js`
+                                  )
                           }),
                 entries: !lazyOptions || lazyOptions.entries !== false,
                 imports: !lazyOptions || lazyOptions.imports !== false,
@@ -331,7 +356,11 @@ class WebpackOptionsApply extends OptionsApply {
         new SystemPlugin().apply(compiler)
         new ImportMetaPlugin().apply(compiler)
         new URLPlugin().apply(compiler)
-        new WorkerPlugin(options.output.workerChunkLoading, options.output.workerWasmLoading, options.output.module).apply(compiler)
+        new WorkerPlugin(
+            options.output.workerChunkLoading,
+            options.output.workerWasmLoading,
+            options.output.module
+        ).apply(compiler)
 
         new DefaultStatsFactoryPlugin().apply(compiler)
         new DefaultStatsPresetPlugin().apply(compiler)
@@ -372,7 +401,9 @@ class WebpackOptionsApply extends OptionsApply {
         }
         if (options.optimization.usedExports) {
             const FlagDependencyUsagePlugin = require('./FlagDependencyUsagePlugin')
-            new FlagDependencyUsagePlugin(options.optimization.usedExports === 'global').apply(compiler)
+            new FlagDependencyUsagePlugin(options.optimization.usedExports === 'global').apply(
+                compiler
+            )
         }
         if (options.optimization.innerGraph) {
             const InnerGraphPlugin = require('./optimize/InnerGraphPlugin')
@@ -425,7 +456,11 @@ class WebpackOptionsApply extends OptionsApply {
                 case 'hashed': {
                     const WarnDeprecatedOptionPlugin = require('./WarnDeprecatedOptionPlugin')
                     const HashedModuleIdsPlugin = require('./ids/HashedModuleIdsPlugin')
-                    new WarnDeprecatedOptionPlugin('optimization.moduleIds', 'hashed', 'deterministic').apply(compiler)
+                    new WarnDeprecatedOptionPlugin(
+                        'optimization.moduleIds',
+                        'hashed',
+                        'deterministic'
+                    ).apply(compiler)
                     new HashedModuleIdsPlugin({
                         hashFunction: options.output.hashFunction
                     }).apply(compiler)
@@ -515,7 +550,10 @@ class WebpackOptionsApply extends OptionsApply {
         new WarnCaseSensitiveModulesPlugin().apply(compiler)
 
         const AddManagedPathsPlugin = require('./cache/AddManagedPathsPlugin')
-        new AddManagedPathsPlugin(options.snapshot.managedPaths, options.snapshot.immutablePaths).apply(compiler)
+        new AddManagedPathsPlugin(
+            options.snapshot.managedPaths,
+            options.snapshot.immutablePaths
+        ).apply(compiler)
 
         if (options.cache && typeof options.cache === 'object') {
             const cacheOptions = options.cache
@@ -534,7 +572,9 @@ class WebpackOptionsApply extends OptionsApply {
                     }
                     if (cacheOptions.cacheUnaffected) {
                         if (!options.experiments.cacheUnaffected) {
-                            throw new Error("'cache.cacheUnaffected: true' is only allowed when 'experiments.cacheUnaffected' is enabled")
+                            throw new Error(
+                                "'cache.cacheUnaffected: true' is only allowed when 'experiments.cacheUnaffected' is enabled"
+                            )
                         }
                         compiler.moduleMemCaches = new Map()
                     }
@@ -559,7 +599,9 @@ class WebpackOptionsApply extends OptionsApply {
                     }
                     if (cacheOptions.memoryCacheUnaffected) {
                         if (!options.experiments.cacheUnaffected) {
-                            throw new Error("'cache.memoryCacheUnaffected: true' is only allowed when 'experiments.cacheUnaffected' is enabled")
+                            throw new Error(
+                                "'cache.memoryCacheUnaffected: true' is only allowed when 'experiments.cacheUnaffected' is enabled"
+                            )
                         }
                         compiler.moduleMemCaches = new Map()
                     }
@@ -574,7 +616,9 @@ class WebpackOptionsApply extends OptionsApply {
                                     context: options.context,
                                     cacheLocation: cacheOptions.cacheLocation,
                                     version: cacheOptions.version,
-                                    logger: compiler.getInfrastructureLogger('webpack.cache.PackFileCacheStrategy'),
+                                    logger: compiler.getInfrastructureLogger(
+                                        'webpack.cache.PackFileCacheStrategy'
+                                    ),
                                     snapshot: options.snapshot,
                                     maxAge: cacheOptions.maxAge,
                                     profile: cacheOptions.profile,
@@ -608,22 +652,28 @@ class WebpackOptionsApply extends OptionsApply {
         if (!compiler.inputFileSystem) {
             throw new Error('No input filesystem provided')
         }
-        compiler.resolverFactory.hooks.resolveOptions.for('normal').tap('WebpackOptionsApply', resolveOptions => {
-            resolveOptions = cleverMerge(options.resolve, resolveOptions)
-            resolveOptions.fileSystem = compiler.inputFileSystem
-            return resolveOptions
-        })
-        compiler.resolverFactory.hooks.resolveOptions.for('context').tap('WebpackOptionsApply', resolveOptions => {
-            resolveOptions = cleverMerge(options.resolve, resolveOptions)
-            resolveOptions.fileSystem = compiler.inputFileSystem
-            resolveOptions.resolveToContext = true
-            return resolveOptions
-        })
-        compiler.resolverFactory.hooks.resolveOptions.for('loader').tap('WebpackOptionsApply', resolveOptions => {
-            resolveOptions = cleverMerge(options.resolveLoader, resolveOptions)
-            resolveOptions.fileSystem = compiler.inputFileSystem
-            return resolveOptions
-        })
+        compiler.resolverFactory.hooks.resolveOptions
+            .for('normal')
+            .tap('WebpackOptionsApply', resolveOptions => {
+                resolveOptions = cleverMerge(options.resolve, resolveOptions)
+                resolveOptions.fileSystem = compiler.inputFileSystem
+                return resolveOptions
+            })
+        compiler.resolverFactory.hooks.resolveOptions
+            .for('context')
+            .tap('WebpackOptionsApply', resolveOptions => {
+                resolveOptions = cleverMerge(options.resolve, resolveOptions)
+                resolveOptions.fileSystem = compiler.inputFileSystem
+                resolveOptions.resolveToContext = true
+                return resolveOptions
+            })
+        compiler.resolverFactory.hooks.resolveOptions
+            .for('loader')
+            .tap('WebpackOptionsApply', resolveOptions => {
+                resolveOptions = cleverMerge(options.resolveLoader, resolveOptions)
+                resolveOptions.fileSystem = compiler.inputFileSystem
+                return resolveOptions
+            })
         compiler.hooks.afterResolvers.call(compiler)
         return options
     }

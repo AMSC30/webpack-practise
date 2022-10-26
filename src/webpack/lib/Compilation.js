@@ -6,7 +6,15 @@
 'use strict'
 
 const asyncLib = require('neo-async')
-const { HookMap, SyncHook, SyncBailHook, SyncWaterfallHook, AsyncSeriesHook, AsyncSeriesBailHook, AsyncParallelHook } = require('tapable')
+const {
+    HookMap,
+    SyncHook,
+    SyncBailHook,
+    SyncWaterfallHook,
+    AsyncSeriesHook,
+    AsyncSeriesBailHook,
+    AsyncParallelHook
+} = require('tapable')
 const util = require('util')
 const { CachedSource } = require('webpack-sources')
 const { MultiItemCache } = require('./CacheFacade')
@@ -50,9 +58,20 @@ const LazySet = require('./util/LazySet')
 const { provide } = require('./util/MapHelpers')
 const WeakTupleMap = require('./util/WeakTupleMap')
 const { cachedCleverMerge } = require('./util/cleverMerge')
-const { compareLocations, concatComparators, compareSelect, compareIds, compareStringsNumeric, compareModulesByIdentifier } = require('./util/comparators')
+const {
+    compareLocations,
+    concatComparators,
+    compareSelect,
+    compareIds,
+    compareStringsNumeric,
+    compareModulesByIdentifier
+} = require('./util/comparators')
 const createHash = require('./util/createHash')
-const { arrayToSetDeprecation, soonFrozenObjectDeprecation, createFakeHook } = require('./util/deprecation')
+const {
+    arrayToSetDeprecation,
+    soonFrozenObjectDeprecation,
+    createFakeHook
+} = require('./util/deprecation')
 const processAsyncTree = require('./util/processAsyncTree')
 const { getRuntimeKey } = require('./util/runtime')
 const { isSourceEqual } = require('./util/source')
@@ -118,7 +137,10 @@ const byNameOrHash = concatComparators(
 
 const byMessage = compareSelect(err => `${err.message}`, compareStringsNumeric)
 
-const byModule = compareSelect(err => (err.module && err.module.identifier()) || '', compareStringsNumeric)
+const byModule = compareSelect(
+    err => (err.module && err.module.identifier()) || '',
+    compareStringsNumeric
+)
 
 const byLocation = compareSelect(err => err.loc, compareLocations)
 
@@ -177,7 +199,10 @@ class Compilation {
                                 if (processedAssets !== undefined) processedAssets.add(this.assets)
                                 const newAssets = popNewAssets(assets)
                                 if (newAssets !== undefined) {
-                                    this.hooks.processAdditionalAssets.callAsync(newAssets, callback)
+                                    this.hooks.processAdditionalAssets.callAsync(
+                                        newAssets,
+                                        callback
+                                    )
                                     return
                                 }
                                 callback()
@@ -185,20 +210,28 @@ class Compilation {
                         }
                     case 'async':
                         if (additionalAssetsFn) {
-                            this.hooks.processAdditionalAssets.tapAsync(name, (assets, callback) => {
-                                if (processedAssets.has(this.assets)) return additionalAssetsFn(assets, callback)
-                                callback()
-                            })
+                            this.hooks.processAdditionalAssets.tapAsync(
+                                name,
+                                (assets, callback) => {
+                                    if (processedAssets.has(this.assets))
+                                        return additionalAssetsFn(assets, callback)
+                                    callback()
+                                }
+                            )
                         }
                         return {
                             ...remainingTap,
                             fn: (assets, callback) => {
                                 fn(assets, err => {
                                     if (err) return callback(err)
-                                    if (processedAssets !== undefined) processedAssets.add(this.assets)
+                                    if (processedAssets !== undefined)
+                                        processedAssets.add(this.assets)
                                     const newAssets = popNewAssets(assets)
                                     if (newAssets !== undefined) {
-                                        this.hooks.processAdditionalAssets.callAsync(newAssets, callback)
+                                        this.hooks.processAdditionalAssets.callAsync(
+                                            newAssets,
+                                            callback
+                                        )
                                         return
                                     }
                                     callback()
@@ -208,7 +241,8 @@ class Compilation {
                     case 'promise':
                         if (additionalAssetsFn) {
                             this.hooks.processAdditionalAssets.tapPromise(name, assets => {
-                                if (processedAssets.has(this.assets)) return additionalAssetsFn(assets)
+                                if (processedAssets.has(this.assets))
+                                    return additionalAssetsFn(assets)
                                 return Promise.resolve()
                             })
                         }
@@ -218,7 +252,8 @@ class Compilation {
                                 const p = fn(assets)
                                 if (!p || !p.then) return p
                                 return p.then(() => {
-                                    if (processedAssets !== undefined) processedAssets.add(this.assets)
+                                    if (processedAssets !== undefined)
+                                        processedAssets.add(this.assets)
                                     const newAssets = popNewAssets(assets)
                                     if (newAssets !== undefined) {
                                         return this.hooks.processAdditionalAssets.promise(newAssets)
@@ -234,7 +269,8 @@ class Compilation {
 
         const createProcessAssetsHook = (name, stage, getArgs, code) => {
             if (!this._backCompat && code) return undefined
-            const errorMessage = reason => `Can't automatically convert plugin using Compilation.hooks.${name} to Compilation.hooks.processAssets because ${reason}.
+            const errorMessage =
+                reason => `Can't automatically convert plugin using Compilation.hooks.${name} to Compilation.hooks.processAssets because ${reason}.
 BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a single Compilation.hooks.processAssets hook.`
             const getOptions = options => {
                 if (typeof options === 'string') options = { name: options }
@@ -256,7 +292,9 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                     },
                     /** @type {AsyncSeriesHook<T>["tapAsync"]} */
                     tapAsync: (options, fn) => {
-                        processAssetsHook.tapAsync(getOptions(options), (assets, callback) => /** @type {any} */ (fn)(...getArgs(), callback))
+                        processAssetsHook.tapAsync(getOptions(options), (assets, callback) =>
+                            /** @type {any} */ (fn)(...getArgs(), callback)
+                        )
                     },
                     /** @type {AsyncSeriesHook<T>["tapPromise"]} */
                     tapPromise: (options, fn) => {
@@ -278,7 +316,11 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             failedEntry: new SyncHook(['entry', 'options', 'error']),
             succeedEntry: new SyncHook(['entry', 'options', 'module']),
 
-            dependencyReferencedExports: new SyncWaterfallHook(['referencedExports', 'dependency', 'runtime']),
+            dependencyReferencedExports: new SyncWaterfallHook([
+                'referencedExports',
+                'dependency',
+                'runtime'
+            ]),
 
             executeModule: new SyncHook(['options', 'context']),
             prepareModuleExecution: new AsyncParallelHook(['options', 'context']),
@@ -308,12 +350,30 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             afterOptimizeChunkModules: new SyncHook(['chunks', 'modules']),
             shouldRecord: new SyncBailHook([]),
 
-            additionalChunkRuntimeRequirements: new SyncHook(['chunk', 'runtimeRequirements', 'context']),
-            runtimeRequirementInChunk: new HookMap(() => new SyncBailHook(['chunk', 'runtimeRequirements', 'context'])),
-            additionalModuleRuntimeRequirements: new SyncHook(['module', 'runtimeRequirements', 'context']),
-            runtimeRequirementInModule: new HookMap(() => new SyncBailHook(['module', 'runtimeRequirements', 'context'])),
-            additionalTreeRuntimeRequirements: new SyncHook(['chunk', 'runtimeRequirements', 'context']),
-            runtimeRequirementInTree: new HookMap(() => new SyncBailHook(['chunk', 'runtimeRequirements', 'context'])),
+            additionalChunkRuntimeRequirements: new SyncHook([
+                'chunk',
+                'runtimeRequirements',
+                'context'
+            ]),
+            runtimeRequirementInChunk: new HookMap(
+                () => new SyncBailHook(['chunk', 'runtimeRequirements', 'context'])
+            ),
+            additionalModuleRuntimeRequirements: new SyncHook([
+                'module',
+                'runtimeRequirements',
+                'context'
+            ]),
+            runtimeRequirementInModule: new HookMap(
+                () => new SyncBailHook(['module', 'runtimeRequirements', 'context'])
+            ),
+            additionalTreeRuntimeRequirements: new SyncHook([
+                'chunk',
+                'runtimeRequirements',
+                'context'
+            ]),
+            runtimeRequirementInTree: new HookMap(
+                () => new SyncBailHook(['chunk', 'runtimeRequirements', 'context'])
+            ),
 
             runtimeModule: new SyncHook(['module', 'chunk']),
 
@@ -362,7 +422,11 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
 
             // TODO webpack 6 deprecate
             /** @deprecated */
-            additionalAssets: createProcessAssetsHook('additionalAssets', Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL, () => []),
+            additionalAssets: createProcessAssetsHook(
+                'additionalAssets',
+                Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
+                () => []
+            ),
             // TODO webpack 6 remove
             optimizeChunkAssets: createProcessAssetsHook(
                 'optimizeChunkAssets',
@@ -686,7 +750,9 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                 if (typeof name === 'function') {
                     name = name()
                     if (!name) {
-                        throw new TypeError('Compilation.getLogger(name) called with a function not returning a name')
+                        throw new TypeError(
+                            'Compilation.getLogger(name) called with a function not returning a name'
+                        )
                     }
                 }
                 let trace
@@ -694,7 +760,9 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                     case LogType.warn:
                     case LogType.error:
                     case LogType.trace:
-                        trace = ErrorHelpers.cutOffLoaderExecution(new Error('Trace').stack).split('\n').slice(3)
+                        trace = ErrorHelpers.cutOffLoaderExecution(new Error('Trace').stack)
+                            .split('\n')
+                            .slice(3)
                         break
                 }
                 /** @type {LogEntry} */
@@ -736,13 +804,17 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                             if (typeof name === 'function') {
                                 name = name()
                                 if (!name) {
-                                    throw new TypeError('Compilation.getLogger(name) called with a function not returning a name')
+                                    throw new TypeError(
+                                        'Compilation.getLogger(name) called with a function not returning a name'
+                                    )
                                 }
                             }
                             if (typeof childName === 'function') {
                                 childName = childName()
                                 if (!childName) {
-                                    throw new TypeError('Logger.getChildLogger(name) called with a function not returning a name')
+                                    throw new TypeError(
+                                        'Logger.getChildLogger(name) called with a function not returning a name'
+                                    )
                                 }
                             }
                             return `${name}/${childName}`
@@ -752,7 +824,9 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                             if (typeof name === 'function') {
                                 name = name()
                                 if (!name) {
-                                    throw new TypeError('Compilation.getLogger(name) called with a function not returning a name')
+                                    throw new TypeError(
+                                        'Compilation.getLogger(name) called with a function not returning a name'
+                                    )
                                 }
                             }
                             return `${name}/${childName}`
@@ -764,7 +838,9 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                             if (typeof childName === 'function') {
                                 childName = childName()
                                 if (!childName) {
-                                    throw new TypeError('Logger.getChildLogger(name) called with a function not returning a name')
+                                    throw new TypeError(
+                                        'Logger.getChildLogger(name) called with a function not returning a name'
+                                    )
                                 }
                             }
                             return `${name}/${childName}`
@@ -847,24 +923,10 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
         return this._modules.get(identifier)
     }
 
-    /**
-     * Schedules a build of the module object
-     *
-     * @param {Module} module module to be built
-     * @param {ModuleCallback} callback the callback
-     * @returns {void}
-     */
     buildModule(module, callback) {
         this.buildQueue.add(module, callback)
     }
 
-    /**
-     * Builds the module object
-     *
-     * @param {Module} module module to be built
-     * @param {ModuleCallback} callback the callback
-     * @returns {void}
-     */
     _buildModule(module, callback) {
         const currentProfile = this.profile ? this.moduleGraph.getProfile(module) : undefined
         if (currentProfile !== undefined) {
@@ -890,29 +952,35 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
 
                 this.hooks.buildModule.call(module)
                 this.builtModules.add(module)
-                module.build(this.options, this, this.resolverFactory.get('normal', module.resolveOptions), this.inputFileSystem, err => {
-                    if (currentProfile !== undefined) {
-                        currentProfile.markBuildingEnd()
-                    }
-                    if (err) {
-                        this.hooks.failedModule.call(module, err)
-                        return callback(err)
-                    }
-                    if (currentProfile !== undefined) {
-                        currentProfile.markStoringStart()
-                    }
-                    this._modulesCache.store(module.identifier(), null, module, err => {
+                module.build(
+                    this.options,
+                    this,
+                    this.resolverFactory.get('normal', module.resolveOptions),
+                    this.inputFileSystem,
+                    err => {
                         if (currentProfile !== undefined) {
-                            currentProfile.markStoringEnd()
+                            currentProfile.markBuildingEnd()
                         }
                         if (err) {
                             this.hooks.failedModule.call(module, err)
-                            return callback(new ModuleStoreError(module, err))
+                            return callback(err)
                         }
-                        this.hooks.succeedModule.call(module)
-                        return callback()
-                    })
-                })
+                        if (currentProfile !== undefined) {
+                            currentProfile.markStoringStart()
+                        }
+                        this._modulesCache.store(module.identifier(), null, module, err => {
+                            if (currentProfile !== undefined) {
+                                currentProfile.markStoringEnd()
+                            }
+                            if (err) {
+                                this.hooks.failedModule.call(module, err)
+                                return callback(new ModuleStoreError(module, err))
+                            }
+                            this.hooks.succeedModule.call(module)
+                            return callback()
+                        })
+                    }
+                )
             }
         )
     }
@@ -952,47 +1020,31 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
      * @returns {void}
      */
     _processModuleDependencies(module, callback) {
-        /** @type {Array<{factory: ModuleFactory, dependencies: Dependency[], context: string|undefined, originModule: Module|null}>} */
         const sortedDependencies = []
 
-        /** @type {DependenciesBlock} */
         let currentBlock
-
-        /** @type {Map<ModuleFactory, Map<string, Dependency[]>>} */
         let dependencies
-        /** @type {DepConstructor} */
         let factoryCacheKey
-        /** @type {ModuleFactory} */
         let factoryCacheKey2
-        /** @type {Map<string, Dependency[]>} */
         let factoryCacheValue
-        /** @type {string} */
         let listCacheKey1
-        /** @type {string} */
         let listCacheKey2
-        /** @type {Dependency[]} */
         let listCacheValue
-
         let inProgressSorting = 1
         let inProgressTransitive = 1
 
         const onDependenciesSorted = err => {
             if (err) return callback(err)
 
-            // early exit without changing parallelism back and forth
             if (sortedDependencies.length === 0 && inProgressTransitive === 1) {
                 return callback()
             }
 
-            // This is nested so we need to allow one additional task
             this.processDependenciesQueue.increaseParallelism()
 
             for (const item of sortedDependencies) {
                 inProgressTransitive++
                 this.handleModuleCreation(item, err => {
-                    // In V8, the Error objects keep a reference to the functions on the stack. These warnings &
-                    // errors are created inside closures that keep a reference to the Compilation, so errors are
-                    // leaking the Compilation object.
                     if (err && this.bail) {
                         if (inProgressTransitive <= 0) return
                         inProgressTransitive = -1
@@ -1014,11 +1066,6 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             return callback()
         }
 
-        /**
-         * @param {Dependency} dep dependency
-         * @param {number} index index in block
-         * @returns {void}
-         */
         const processDependency = (dep, index) => {
             this.moduleGraph.setParents(dep, currentBlock, module, index)
             if (this._unsafeCache) {
@@ -1027,7 +1074,11 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                     if (unsafeCachedModule === null) return
                     if (unsafeCachedModule !== undefined) {
                         if (this._restoredUnsafeCacheModuleEntries.has(unsafeCachedModule)) {
-                            this._handleExistingModuleFromUnsafeCache(module, dep, unsafeCachedModule)
+                            this._handleExistingModuleFromUnsafeCache(
+                                module,
+                                dep,
+                                unsafeCachedModule
+                            )
                             return
                         }
                         const identifier = unsafeCachedModule.identifier()
@@ -1057,19 +1108,29 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                                     if (cachedModule !== unsafeCachedModule) {
                                         unsafeCacheDependencies.set(dep, cachedModule)
                                     }
-                                    cachedModule.restoreFromUnsafeCache(data, this.params.normalModuleFactory, this.params)
+                                    cachedModule.restoreFromUnsafeCache(
+                                        data,
+                                        this.params.normalModuleFactory,
+                                        this.params
+                                    )
                                     this._restoredUnsafeCacheEntries.set(identifier, cachedModule)
                                     this._restoredUnsafeCacheModuleEntries.add(cachedModule)
                                     if (!this.modules.has(cachedModule)) {
                                         inProgressTransitive++
-                                        this._handleNewModuleFromUnsafeCache(module, dep, cachedModule, err => {
-                                            if (err) {
-                                                if (inProgressTransitive <= 0) return
-                                                inProgressTransitive = -1
-                                                onTransitiveTasksFinished(err)
+                                        this._handleNewModuleFromUnsafeCache(
+                                            module,
+                                            dep,
+                                            cachedModule,
+                                            err => {
+                                                if (err) {
+                                                    if (inProgressTransitive <= 0) return
+                                                    inProgressTransitive = -1
+                                                    onTransitiveTasksFinished(err)
+                                                }
+                                                if (--inProgressTransitive === 0)
+                                                    return onTransitiveTasksFinished()
                                             }
-                                            if (--inProgressTransitive === 0) return onTransitiveTasksFinished()
-                                        })
+                                        )
                                         if (--inProgressSorting === 0) onDependenciesSorted()
                                         return
                                     }
@@ -1095,10 +1156,6 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             processDependencyForResolving(dep)
         }
 
-        /**
-         * @param {Dependency} dep dependency
-         * @returns {void}
-         */
         const processDependencyForResolving = dep => {
             const resourceIdent = dep.getResourceIdentifier()
             if (resourceIdent !== undefined && resourceIdent !== null) {
@@ -1114,7 +1171,9 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                 } else {
                     const factory = this.dependencyFactories.get(constructor)
                     if (factory === undefined) {
-                        throw new Error(`No module factory available for dependency type: ${constructor.name}`)
+                        throw new Error(
+                            `No module factory available for dependency type: ${constructor.name}`
+                        )
                     }
                     if (factoryCacheKey2 === factory) {
                         // Fast path 2: same factory as prev item
@@ -1144,7 +1203,10 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                 // Here webpack is using heuristic that assumes
                 // mostly esm dependencies would be used
                 // so we don't allocate extra string for them
-                const cacheKey = category === esmDependencyCategory ? resourceIdent : `${category}${resourceIdent}`
+                const cacheKey =
+                    category === esmDependencyCategory
+                        ? resourceIdent
+                        : `${category}${resourceIdent}`
                 let list = factoryCacheValue.get(cacheKey)
                 if (list === undefined) {
                     factoryCacheValue.set(cacheKey, (list = []))
@@ -1163,7 +1225,6 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
         }
 
         try {
-            /** @type {DependenciesBlock[]} */
             const queue = [module]
             do {
                 const block = queue.pop()
@@ -1203,23 +1264,18 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
         moduleGraph.setResolvedModule(originModule, dependency, module)
     }
 
-    /**
-     * @typedef {Object} HandleModuleCreationOptions
-     * @property {ModuleFactory} factory
-     * @property {Dependency[]} dependencies
-     * @property {Module | null} originModule
-     * @property {Partial<ModuleFactoryCreateDataContextInfo>=} contextInfo
-     * @property {string=} context
-     * @property {boolean=} recursive recurse into dependencies of the created module
-     * @property {boolean=} connectOrigin connect the resolved module with the origin module
-     */
-
-    /**
-     * @param {HandleModuleCreationOptions} options options object
-     * @param {ModuleCallback} callback callback
-     * @returns {void}
-     */
-    handleModuleCreation({ factory, dependencies, originModule, contextInfo, context, recursive = true, connectOrigin = recursive }, callback) {
+    handleModuleCreation(
+        {
+            factory,
+            dependencies,
+            originModule,
+            contextInfo,
+            context,
+            recursive = true,
+            connectOrigin = recursive
+        },
+        callback
+    ) {
         const moduleGraph = this.moduleGraph
 
         // 记录各种时间
@@ -1236,9 +1292,9 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                 context
             },
             (err, factoryResult) => {
-                console.log(factoryResult)
                 const applyFactoryResultDependencies = () => {
-                    const { fileDependencies, contextDependencies, missingDependencies } = factoryResult
+                    const { fileDependencies, contextDependencies, missingDependencies } =
+                        factoryResult
                     if (fileDependencies) {
                         this.fileDependencies.addAll(fileDependencies)
                     }
@@ -1282,25 +1338,45 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                         return callback(err)
                     }
 
-                    if (this._unsafeCache && factoryResult.cacheable !== false && /** @type {any} */ (module).restoreFromUnsafeCache && this._unsafeCachePredicate(module)) {
-                        const unsafeCacheableModule = /** @type {Module & { restoreFromUnsafeCache: Function }} */ (module)
+                    if (
+                        this._unsafeCache &&
+                        factoryResult.cacheable !== false &&
+                        /** @type {any} */ (module).restoreFromUnsafeCache &&
+                        this._unsafeCachePredicate(module)
+                    ) {
+                        const unsafeCacheableModule =
+                            /** @type {Module & { restoreFromUnsafeCache: Function }} */ (module)
                         for (let i = 0; i < dependencies.length; i++) {
                             const dependency = dependencies[i]
-                            moduleGraph.setResolvedModule(connectOrigin ? originModule : null, dependency, unsafeCacheableModule)
+                            moduleGraph.setResolvedModule(
+                                connectOrigin ? originModule : null,
+                                dependency,
+                                unsafeCacheableModule
+                            )
                             unsafeCacheDependencies.set(dependency, unsafeCacheableModule)
                         }
                         if (!unsafeCacheData.has(unsafeCacheableModule)) {
-                            unsafeCacheData.set(unsafeCacheableModule, unsafeCacheableModule.getUnsafeCacheData())
+                            unsafeCacheData.set(
+                                unsafeCacheableModule,
+                                unsafeCacheableModule.getUnsafeCacheData()
+                            )
                         }
                     } else {
                         applyFactoryResultDependencies()
                         for (let i = 0; i < dependencies.length; i++) {
                             const dependency = dependencies[i]
-                            moduleGraph.setResolvedModule(connectOrigin ? originModule : null, dependency, module)
+                            moduleGraph.setResolvedModule(
+                                connectOrigin ? originModule : null,
+                                dependency,
+                                module
+                            )
                         }
                     }
 
-                    moduleGraph.setIssuerIfUnset(module, originModule !== undefined ? originModule : null)
+                    moduleGraph.setIssuerIfUnset(
+                        module,
+                        originModule !== undefined ? originModule : null
+                    )
                     if (module !== newModule) {
                         if (currentProfile !== undefined) {
                             const otherProfile = moduleGraph.getProfile(module)
@@ -1312,7 +1388,12 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                         }
                     }
 
-                    this._handleModuleBuildAndDependencies(originModule, module, recursive, callback)
+                    this._handleModuleBuildAndDependencies(
+                        originModule,
+                        module,
+                        recursive,
+                        callback
+                    )
                 })
             }
         )
@@ -1383,7 +1464,18 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
         })
     }
 
-    _factorizeModule({ currentProfile, factory, dependencies, originModule, factoryResult, contextInfo, context }, callback) {
+    _factorizeModule(
+        {
+            currentProfile,
+            factory,
+            dependencies,
+            originModule,
+            factoryResult,
+            contextInfo,
+            context
+        },
+        callback
+    ) {
         if (currentProfile !== undefined) {
             currentProfile.markFactoryStart()
         }
@@ -1396,12 +1488,15 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                     ...contextInfo
                 },
                 resolveOptions: originModule ? originModule.resolveOptions : undefined,
-                context: context ? context : originModule ? originModule.context : this.compiler.context,
+                context: context
+                    ? context
+                    : originModule
+                    ? originModule.context
+                    : this.compiler.context,
                 dependencies: dependencies
             },
             (err, result) => {
                 if (result) {
-                    // TODO webpack 6: remove
                     // For backward-compat
                     if (result.module === undefined && result instanceof Module) {
                         result = {
@@ -1409,7 +1504,8 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                         }
                     }
                     if (!factoryResult) {
-                        const { fileDependencies, contextDependencies, missingDependencies } = result
+                        const { fileDependencies, contextDependencies, missingDependencies } =
+                            result
                         if (fileDependencies) {
                             this.fileDependencies.addAll(fileDependencies)
                         }
@@ -1422,7 +1518,11 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                     }
                 }
                 if (err) {
-                    const notFoundError = new ModuleNotFoundError(originModule, err, dependencies.map(d => d.loc).filter(Boolean)[0])
+                    const notFoundError = new ModuleNotFoundError(
+                        originModule,
+                        err,
+                        dependencies.map(d => d.loc).filter(Boolean)[0]
+                    )
                     return callback(notFoundError, factoryResult ? result : undefined)
                 }
                 if (!result) {
@@ -1438,24 +1538,10 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
         )
     }
 
-    /**
-     * @param {string} context context string path
-     * @param {Dependency} dependency dependency used to create Module chain
-     * @param {ModuleCallback} callback callback for when module chain is complete
-     * @returns {void} will throw if dependency instance is not a valid Dependency
-     */
     addModuleChain(context, dependency, callback) {
         return this.addModuleTree({ context, dependency }, callback)
     }
 
-    /**
-     * @param {Object} options options
-     * @param {string} options.context context string path
-     * @param {Dependency} options.dependency dependency used to create Module chain
-     * @param {Partial<ModuleFactoryCreateDataContextInfo>=} options.contextInfo additional context info for the root module
-     * @param {ModuleCallback} callback callback for when module chain is complete
-     * @returns {void} will throw if dependency instance is not a valid Dependency
-     */
     addModuleTree({ context, dependency, contextInfo }, callback) {
         if (typeof dependency !== 'object' || dependency === null || !dependency.constructor) {
             return callback(new WebpackError("Parameter 'dependency' must be a Dependency"))
@@ -1466,7 +1552,11 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
         const moduleFactory = this.dependencyFactories.get(Dep)
 
         if (!moduleFactory) {
-            return callback(new WebpackError(`No dependency factory available for this dependency type: ${dependency.constructor.name}`))
+            return callback(
+                new WebpackError(
+                    `No dependency factory available for this dependency type: ${dependency.constructor.name}`
+                )
+            )
         }
 
         this.handleModuleCreation(
@@ -1500,25 +1590,10 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
         this._addEntryItem(context, entry, 'dependencies', options, callback)
     }
 
-    /**
-     * @param {string} context context path for entry
-     * @param {Dependency} dependency dependency that should be followed
-     * @param {EntryOptions} options options
-     * @param {ModuleCallback} callback callback function
-     * @returns {void} returns
-     */
     addInclude(context, dependency, options, callback) {
         this._addEntryItem(context, dependency, 'includeDependencies', options, callback)
     }
 
-    /**
-     * @param {string} context context path for entry
-     * @param {Dependency} entry entry dependency that should be followed
-     * @param {"dependencies" | "includeDependencies"} target type of entry
-     * @param {EntryOptions} options options
-     * @param {ModuleCallback} callback callback function
-     * @returns {void} returns
-     */
     _addEntryItem(context, entry, target, options, callback) {
         const { name } = options
         let entryData = name !== undefined ? this.entries.get(name) : this.globalEntry
@@ -1538,13 +1613,21 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             for (const key of Object.keys(options)) {
                 if (options[key] === undefined) continue
                 if (entryData.options[key] === options[key]) continue
-                if (Array.isArray(entryData.options[key]) && Array.isArray(options[key]) && arrayEquals(entryData.options[key], options[key])) {
+                if (
+                    Array.isArray(entryData.options[key]) &&
+                    Array.isArray(options[key]) &&
+                    arrayEquals(entryData.options[key], options[key])
+                ) {
                     continue
                 }
                 if (entryData.options[key] === undefined) {
                     entryData.options[key] = options[key]
                 } else {
-                    return callback(new WebpackError(`Conflicting entry option ${key} = ${entryData.options[key]} vs ${options[key]}`))
+                    return callback(
+                        new WebpackError(
+                            `Conflicting entry option ${key} = ${entryData.options[key]} vs ${options[key]}`
+                        )
+                    )
                 }
             }
         }
@@ -1554,34 +1637,25 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             {
                 context,
                 dependency: entry,
-                contextInfo: entryData.options.layer ? { issuerLayer: entryData.options.layer } : undefined
+                contextInfo: entryData.options.layer
+                    ? { issuerLayer: entryData.options.layer }
+                    : undefined
             },
             (err, module) => {
                 if (err) {
                     this.hooks.failedEntry.call(entry, options, err)
                     return callback(err)
                 }
-                console.log('addModuleTree的回调')
                 this.hooks.succeedEntry.call(entry, options, module)
                 return callback(null, module)
             }
         )
     }
 
-    /**
-     * @param {Module} module module to be rebuilt
-     * @param {ModuleCallback} callback callback when module finishes rebuilding
-     * @returns {void}
-     */
     rebuildModule(module, callback) {
         this.rebuildQueue.add(module, callback)
     }
 
-    /**
-     * @param {Module} module module to be rebuilt
-     * @param {ModuleCallback} callback callback when module finishes rebuilding
-     * @returns {void}
-     */
     _rebuildModule(module, callback) {
         this.hooks.rebuildModule.call(module)
         const oldDependencies = module.dependencies.slice()
@@ -1734,7 +1808,10 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
         }
         const directOnlyInfectedModules = new Set()
         for (const module of infectedModules) {
-            for (const [referencingModule, connections] of moduleGraph.getIncomingConnectionsByOriginModule(module)) {
+            for (const [
+                referencingModule,
+                connections
+            ] of moduleGraph.getIncomingConnectionsByOriginModule(module)) {
                 if (!referencingModule) continue
                 if (infectedModules.has(referencingModule)) continue
                 const type = reduceAffectType(connections)
@@ -1749,7 +1826,10 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
         for (const module of directOnlyInfectedModules) infectedModules.add(module)
         const directOnlyAffectModules = new Set()
         for (const module of affectedModules) {
-            for (const [referencingModule, connections] of moduleGraph.getIncomingConnectionsByOriginModule(module)) {
+            for (const [
+                referencingModule,
+                connections
+            ] of moduleGraph.getIncomingConnectionsByOriginModule(module)) {
                 if (!referencingModule) continue
                 if (infectedModules.has(referencingModule)) continue
                 if (affectedModules.has(referencingModule)) continue
@@ -1768,7 +1848,9 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
         }
         for (const module of directOnlyAffectModules) affectedModules.add(module)
         this.logger.log(
-            `${Math.round((100 * (affectedModules.size + infectedModules.size)) / this.modules.size)}% (${affectedModules.size} affected + ${infectedModules.size} infected of ${
+            `${Math.round(
+                (100 * (affectedModules.size + infectedModules.size)) / this.modules.size
+            )}% (${affectedModules.size} affected + ${infectedModules.size} infected of ${
                 this.modules.size
             }) modules flagged as affected (${statNew} new modules, ${statChanged} changed, ${statReferencesChanged} references changed, ${statUnchanged} unchanged, ${statWithoutBuild} were not built)`
         )
@@ -1894,15 +1976,39 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                 const profile = moduleGraph.getProfile(module)
                 if (!profile) continue
                 modulesWithProfiles.set(module, profile)
-                p.range(profile.buildingStartTime, profile.buildingEndTime, f => (profile.buildingParallelismFactor = f))
-                p.range(profile.factoryStartTime, profile.factoryEndTime, f => (profile.factoryParallelismFactor = f))
-                p.range(profile.integrationStartTime, profile.integrationEndTime, f => (profile.integrationParallelismFactor = f))
-                p.range(profile.storingStartTime, profile.storingEndTime, f => (profile.storingParallelismFactor = f))
-                p.range(profile.restoringStartTime, profile.restoringEndTime, f => (profile.restoringParallelismFactor = f))
+                p.range(
+                    profile.buildingStartTime,
+                    profile.buildingEndTime,
+                    f => (profile.buildingParallelismFactor = f)
+                )
+                p.range(
+                    profile.factoryStartTime,
+                    profile.factoryEndTime,
+                    f => (profile.factoryParallelismFactor = f)
+                )
+                p.range(
+                    profile.integrationStartTime,
+                    profile.integrationEndTime,
+                    f => (profile.integrationParallelismFactor = f)
+                )
+                p.range(
+                    profile.storingStartTime,
+                    profile.storingEndTime,
+                    f => (profile.storingParallelismFactor = f)
+                )
+                p.range(
+                    profile.restoringStartTime,
+                    profile.restoringEndTime,
+                    f => (profile.restoringParallelismFactor = f)
+                )
                 if (profile.additionalFactoryTimes) {
                     for (const { start, end } of profile.additionalFactoryTimes) {
                         const influence = (end - start) / profile.additionalFactories
-                        p.range(start, end, f => (profile.additionalFactoriesParallelismFactor += f * influence))
+                        p.range(
+                            start,
+                            end,
+                            f => (profile.additionalFactoriesParallelismFactor += f * influence)
+                        )
                     }
                 }
             }
@@ -1934,7 +2040,9 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                     if (t <= 10) continue
                     logByValue(
                         t,
-                        ` | ${Math.round(t)} ms${p >= 1.1 ? ` (parallelism ${Math.round(p * 10) / 10})` : ''} ${category} > ${module.readableIdentifier(this.requestShortener)}`
+                        ` | ${Math.round(t)} ms${
+                            p >= 1.1 ? ` (parallelism ${Math.round(p * 10) / 10})` : ''
+                        } ${category} > ${module.readableIdentifier(this.requestShortener)}`
                     )
                     max = Math.max(max, t)
                 }
@@ -1944,7 +2052,11 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             const logByLoadersSummary = (category, getDuration, getParallelism) => {
                 const map = new Map()
                 for (const [module, profile] of modulesWithProfiles) {
-                    const list = provide(map, module.type + '!' + module.identifier().replace(/(!|^)[^!]*$/, ''), () => [])
+                    const list = provide(
+                        map,
+                        module.type + '!' + module.identifier().replace(/(!|^)[^!]*$/, ''),
+                        () => []
+                    )
                     list.push({ module, profile })
                 }
 
@@ -1962,9 +2074,9 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                         if (t <= 10) continue
                         logByValue(
                             t,
-                            ` |  | ${Math.round(t)} ms${p >= 1.1 ? ` (parallelism ${Math.round(p * 10) / 10})` : ''} ${category} > ${module.readableIdentifier(
-                                this.requestShortener
-                            )}`
+                            ` |  | ${Math.round(t)} ms${
+                                p >= 1.1 ? ` (parallelism ${Math.round(p * 10) / 10})` : ''
+                            } ${category} > ${module.readableIdentifier(this.requestShortener)}`
                         )
                         innerMax = Math.max(innerMax, t)
                     }
@@ -1977,7 +2089,11 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                     logByValue(
                         t,
                         ` | ${Math.round(innerSum)} ms ${category} > ${
-                            loaders ? `${modules.length} x ${moduleType} with ${this.requestShortener.shorten(loaders)}` : `${modules.length} x ${moduleType}`
+                            loaders
+                                ? `${
+                                      modules.length
+                                  } x ${moduleType} with ${this.requestShortener.shorten(loaders)}`
+                                : `${modules.length} x ${moduleType}`
                         }`
                     )
                     max = Math.max(max, t)
@@ -2023,18 +2139,16 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
         this.logger.time('finish modules')
         const { modules, moduleMemCaches } = this
         this.hooks.finishModules.callAsync(modules, err => {
+            console.log(modules)
+            debugger
             this.logger.timeEnd('finish modules')
             if (err) return callback(err)
 
             // extract warnings and errors from modules
             this.moduleGraph.freeze('dependency errors')
-            // TODO keep a cacheToken (= {}) for each module in the graph
-            // create a new one per compilation and flag all updated files
-            // and parents with it
+
             this.logger.time('report dependency errors and warnings')
             for (const module of modules) {
-                // TODO only run for modules with changed cacheToken
-                // global WeakMap<CacheToken, WeakSet<Module>> to keep modules without errors/warnings
                 const memCache = moduleMemCaches && moduleMemCaches.get(module)
                 if (memCache && memCache.get('noWarningsOrErrors')) continue
                 let hasProblems = this.reportDependencyErrorsAndWarnings(module, [module])
@@ -2157,7 +2271,10 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
                     .map(dep => this.moduleGraph.getModule(dep))
                     .filter(Boolean)
                     .sort(compareModulesByIdentifier)
-            const includedModules = [...mapAndSort(this.globalEntry.includeDependencies), ...mapAndSort(includeDependencies)]
+            const includedModules = [
+                ...mapAndSort(this.globalEntry.includeDependencies),
+                ...mapAndSort(includeDependencies)
+            ]
 
             let modulesList = chunkGraphInit.get(entrypoint)
             if (modulesList === undefined) {
@@ -2176,7 +2293,8 @@ BREAKING CHANGE: Asset processing hooks in Compilation has been merged into a si
             }
         ] of this.entries) {
             if (dependOn && runtime) {
-                const err = new WebpackError(`Entrypoint '${name}' has 'dependOn' and 'runtime' specified. This is not valid.
+                const err =
+                    new WebpackError(`Entrypoint '${name}' has 'dependOn' and 'runtime' specified. This is not valid.
 Entrypoints that depend on other entrypoints do not have their own runtime.
 They will use the runtime(s) from referenced entrypoints instead.
 Remove the 'runtime' option from the entrypoint.`)
@@ -2191,10 +2309,14 @@ Remove the 'runtime' option from the entrypoint.`)
                 for (const dep of dependOn) {
                     const dependency = this.entrypoints.get(dep)
                     if (!dependency) {
-                        throw new Error(`Entry ${name} depends on ${dep}, but this entry was not found`)
+                        throw new Error(
+                            `Entry ${name} depends on ${dep}, but this entry was not found`
+                        )
                     }
                     if (referencedChunks.has(dependency.getEntrypointChunk())) {
-                        const err = new WebpackError(`Entrypoints '${name}' and '${dep}' use 'dependOn' to depend on each other in a circular way.`)
+                        const err = new WebpackError(
+                            `Entrypoints '${name}' and '${dep}' use 'dependOn' to depend on each other in a circular way.`
+                        )
                         const entryChunk = entry.getEntrypointChunk()
                         err.chunk = entryChunk
                         this.errors.push(err)
@@ -2211,11 +2333,12 @@ Remove the 'runtime' option from the entrypoint.`)
                 let chunk = this.namedChunks.get(runtime)
                 if (chunk) {
                     if (!runtimeChunks.has(chunk)) {
-                        const err = new WebpackError(`Entrypoint '${name}' has a 'runtime' option which points to another entrypoint named '${runtime}'.
+                        const err =
+                            new WebpackError(`Entrypoint '${name}' has a 'runtime' option which points to another entrypoint named '${runtime}'.
 It's not valid to use other entrypoints as runtime chunk.
 Did you mean to use 'dependOn: ${JSON.stringify(
-                            runtime
-                        )}' instead to allow using entrypoint '${name}' within the runtime of entrypoint '${runtime}'? For this '${runtime}' must always be loaded when '${name}' is used.
+                                runtime
+                            )}' instead to allow using entrypoint '${name}' within the runtime of entrypoint '${runtime}'? For this '${runtime}' must always be loaded when '${name}' is used.
 Or do you want to use the entrypoints '${name}' and '${runtime}' independently on the same page with a shared runtime? In this case give them both the same value for the 'runtime' option. It must be a name not already used by an entrypoint.`)
                         const entryChunk = entry.getEntrypointChunk()
                         err.chunk = entryChunk
@@ -2235,6 +2358,7 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
         }
         buildChunkGraph(this, chunkGraphInit)
         this.hooks.afterChunks.call(this.chunks)
+        debugger
         this.logger.timeEnd('create chunks')
 
         this.logger.time('optimize')
@@ -2259,7 +2383,9 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
 
             this.hooks.optimizeChunkModules.callAsync(this.chunks, this.modules, err => {
                 if (err) {
-                    return finalCallback(makeWebpackError(err, 'Compilation.hooks.optimizeChunkModules'))
+                    return finalCallback(
+                        makeWebpackError(err, 'Compilation.hooks.optimizeChunkModules')
+                    )
                 }
 
                 this.hooks.afterOptimizeChunkModules.call(this.chunks, this.modules)
@@ -2343,7 +2469,9 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
                             this.logger.time('process assets')
                             this.hooks.processAssets.callAsync(this.assets, err => {
                                 if (err) {
-                                    return finalCallback(makeWebpackError(err, 'Compilation.hooks.processAssets'))
+                                    return finalCallback(
+                                        makeWebpackError(err, 'Compilation.hooks.processAssets')
+                                    )
                                 }
                                 this.hooks.afterProcessAssets.call(this.assets)
                                 this.logger.timeEnd('process assets')
@@ -2369,7 +2497,9 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
                                 }
                                 return this.hooks.afterSeal.callAsync(err => {
                                     if (err) {
-                                        return finalCallback(makeWebpackError(err, 'Compilation.hooks.afterSeal'))
+                                        return finalCallback(
+                                            makeWebpackError(err, 'Compilation.hooks.afterSeal')
+                                        )
                                     }
                                     this.fileSystemInfo.logStatistics()
                                     finalCallback()
@@ -2525,8 +2655,9 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
                         if (delayedJobs.length === jobs.length) {
                             return callback(
                                 new Error(
-                                    `Unable to make progress during code generation because of circular code generation dependency: ${Array.from(delayedModules, m =>
-                                        m.identifier()
+                                    `Unable to make progress during code generation because of circular code generation dependency: ${Array.from(
+                                        delayedModules,
+                                        m => m.identifier()
                                     ).join(', ')}`
                                 )
                             )
@@ -2545,7 +2676,8 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
                     }
                     this.logger.log(
                         `${Math.round(
-                            (100 * statModulesGenerated) / (statModulesGenerated + statModulesFromCache)
+                            (100 * statModulesGenerated) /
+                                (statModulesGenerated + statModulesFromCache)
                         )}% code generated (${statModulesGenerated} generated, ${statModulesFromCache} from cache)`
                     )
                     callback()
@@ -2568,10 +2700,27 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
      * @param {CodeGenerationResults} results results
      * @param {function(WebpackError=, boolean=): void} callback callback
      */
-    _codeGenerationModule(module, runtime, runtimes, hash, dependencyTemplates, chunkGraph, moduleGraph, runtimeTemplate, errors, results, callback) {
+    _codeGenerationModule(
+        module,
+        runtime,
+        runtimes,
+        hash,
+        dependencyTemplates,
+        chunkGraph,
+        moduleGraph,
+        runtimeTemplate,
+        errors,
+        results,
+        callback
+    ) {
         let codeGenerated = false
         const cache = new MultiItemCache(
-            runtimes.map(runtime => this._codeGenerationCache.getItemCache(`${module.identifier()}|${getRuntimeKey(runtime)}`, `${hash}|${dependencyTemplates.getHash()}`))
+            runtimes.map(runtime =>
+                this._codeGenerationCache.getItemCache(
+                    `${module.identifier()}|${getRuntimeKey(runtime)}`,
+                    `${hash}|${dependencyTemplates.getHash()}`
+                )
+            )
         )
         cache.get((err, cachedResult) => {
             if (err) return callback(err)
@@ -2650,23 +2799,36 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
                 const memCache = moduleMemCaches2 && moduleMemCaches2.get(module)
                 for (const runtime of chunkGraph.getModuleRuntimes(module)) {
                     if (memCache) {
-                        const cached = memCache.get(`moduleRuntimeRequirements-${getRuntimeKey(runtime)}`)
+                        const cached = memCache.get(
+                            `moduleRuntimeRequirements-${getRuntimeKey(runtime)}`
+                        )
                         if (cached !== undefined) {
                             if (cached !== null) {
-                                chunkGraph.addModuleRuntimeRequirements(module, runtime, cached, false)
+                                chunkGraph.addModuleRuntimeRequirements(
+                                    module,
+                                    runtime,
+                                    cached,
+                                    false
+                                )
                             }
                             continue
                         }
                     }
                     let set
-                    const runtimeRequirements = codeGenerationResults.getRuntimeRequirements(module, runtime)
+                    const runtimeRequirements = codeGenerationResults.getRuntimeRequirements(
+                        module,
+                        runtime
+                    )
                     if (runtimeRequirements && runtimeRequirements.size > 0) {
                         set = new Set(runtimeRequirements)
                     } else if (additionalModuleRuntimeRequirements.isUsed()) {
                         set = new Set()
                     } else {
                         if (memCache) {
-                            memCache.set(`moduleRuntimeRequirements-${getRuntimeKey(runtime)}`, null)
+                            memCache.set(
+                                `moduleRuntimeRequirements-${getRuntimeKey(runtime)}`,
+                                null
+                            )
                         }
                         continue
                     }
@@ -2678,7 +2840,10 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
                     }
                     if (set.size === 0) {
                         if (memCache) {
-                            memCache.set(`moduleRuntimeRequirements-${getRuntimeKey(runtime)}`, null)
+                            memCache.set(
+                                `moduleRuntimeRequirements-${getRuntimeKey(runtime)}`,
+                                null
+                            )
                         }
                     } else {
                         if (memCache) {
@@ -2697,7 +2862,10 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
         for (const chunk of chunks) {
             const set = new Set()
             for (const module of chunkGraph.getChunkModulesIterable(chunk)) {
-                const runtimeRequirements = chunkGraph.getModuleRuntimeRequirements(module, chunk.runtime)
+                const runtimeRequirements = chunkGraph.getModuleRuntimeRequirements(
+                    module,
+                    chunk.runtime
+                )
                 for (const r of runtimeRequirements) set.add(r)
             }
             this.hooks.additionalChunkRuntimeRequirements.call(chunk, set, context)
@@ -2768,7 +2936,11 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
                 exportsInfo.setUsedForSideEffectsOnly(runtime)
             }
         }
-        chunkGraph.addModuleRuntimeRequirements(module, chunk.runtime, new Set([RuntimeGlobals.requireScope]))
+        chunkGraph.addModuleRuntimeRequirements(
+            module,
+            chunk.runtime,
+            new Set([RuntimeGlobals.requireScope])
+        )
 
         // runtime modules don't need ids
         chunkGraph.setModuleId(module, '')
@@ -2833,7 +3005,9 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
                     return entrypoint
                 }
             } else if (entrypoint) {
-                throw new Error(`Cannot add an async entrypoint with the name '${name}', because there is already an chunk group with this name`)
+                throw new Error(
+                    `Cannot add an async entrypoint with the name '${name}', because there is already an chunk group with this name`
+                )
             }
         }
         const chunk = this.addChunk(name)
@@ -3073,7 +3247,12 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
         }
 
         for (const module of this.modules) {
-            module.addCacheDependencies(this.fileDependencies, this.contextDependencies, this.missingDependencies, this.buildDependencies)
+            module.addCacheDependencies(
+                this.fileDependencies,
+                this.contextDependencies,
+                this.missingDependencies,
+                this.buildDependencies
+            )
         }
     }
 
@@ -3089,13 +3268,27 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
                 if (memCache) {
                     const digest = memCache.get(`moduleHash-${getRuntimeKey(runtime)}`)
                     if (digest !== undefined) {
-                        chunkGraph.setModuleHashes(module, runtime, digest, digest.slice(0, hashDigestLength))
+                        chunkGraph.setModuleHashes(
+                            module,
+                            runtime,
+                            digest,
+                            digest.slice(0, hashDigestLength)
+                        )
                         statModulesFromCache++
                         continue
                     }
                 }
                 statModulesHashed++
-                const digest = this._createModuleHash(module, chunkGraph, runtime, hashFunction, runtimeTemplate, hashDigest, hashDigestLength, errors)
+                const digest = this._createModuleHash(
+                    module,
+                    chunkGraph,
+                    runtime,
+                    hashFunction,
+                    runtimeTemplate,
+                    hashDigest,
+                    hashDigestLength,
+                    errors
+                )
                 if (memCache) {
                     memCache.set(`moduleHash-${getRuntimeKey(runtime)}`, digest)
                 }
@@ -3109,12 +3302,22 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
         }
         this.logger.log(
             `${statModulesHashed} modules hashed, ${statModulesFromCache} from cache (${
-                Math.round((100 * (statModulesHashed + statModulesFromCache)) / this.modules.size) / 100
+                Math.round((100 * (statModulesHashed + statModulesFromCache)) / this.modules.size) /
+                100
             } variants per module in average)`
         )
     }
 
-    _createModuleHash(module, chunkGraph, runtime, hashFunction, runtimeTemplate, hashDigest, hashDigestLength, errors) {
+    _createModuleHash(
+        module,
+        chunkGraph,
+        runtime,
+        hashFunction,
+        runtimeTemplate,
+        hashDigest,
+        hashDigestLength,
+        errors
+    ) {
         let moduleHashDigest
         try {
             const moduleHash = createHash(hashFunction)
@@ -3128,7 +3331,12 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
             errors.push(new ModuleHashingError(module, err))
             moduleHashDigest = 'XXXXXX'
         }
-        chunkGraph.setModuleHashes(module, runtime, moduleHashDigest, moduleHashDigest.slice(0, hashDigestLength))
+        chunkGraph.setModuleHashes(
+            module,
+            runtime,
+            moduleHashDigest,
+            moduleHashDigest.slice(0, hashDigestLength)
+        )
         return moduleHashDigest
     }
 
@@ -3204,7 +3412,11 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
         }
         let remaining = 0
         for (const info of runtimeChunksMap.values()) {
-            for (const other of new Set(Array.from(info.chunk.getAllReferencedAsyncEntrypoints()).map(e => e.chunks[e.chunks.length - 1]))) {
+            for (const other of new Set(
+                Array.from(info.chunk.getAllReferencedAsyncEntrypoints()).map(
+                    e => e.chunks[e.chunks.length - 1]
+                )
+            )) {
                 const otherInfo = runtimeChunksMap.get(other)
                 otherInfo.referencedBy.push(info)
                 info.remaining++
@@ -3251,7 +3463,11 @@ Or do you want to use the entrypoints '${name}' and '${runtime}' independently o
                 }
             }
             circularRuntimeChunkInfo.sort(compareSelect(i => i.chunk, byId))
-            const err = new WebpackError(`Circular dependency between chunks with runtime (${Array.from(circularRuntimeChunkInfo, c => c.chunk.name || c.chunk.id).join(', ')})
+            const err =
+                new WebpackError(`Circular dependency between chunks with runtime (${Array.from(
+                    circularRuntimeChunkInfo,
+                    c => c.chunk.name || c.chunk.id
+                ).join(', ')})
 This prevents using hashes of each other and should be avoided.`)
             err.chunk = circularRuntimeChunkInfo[0].chunk
             this.warnings.push(err)
@@ -3272,7 +3488,16 @@ This prevents using hashes of each other and should be avoided.`)
             const runtime = chunk.runtime
             for (const module of chunkGraph.getChunkModulesIterable(chunk)) {
                 if (!chunkGraph.hasModuleHashes(module, runtime)) {
-                    const hash = this._createModuleHash(module, chunkGraph, runtime, hashFunction, runtimeTemplate, hashDigest, hashDigestLength, errors)
+                    const hash = this._createModuleHash(
+                        module,
+                        chunkGraph,
+                        runtime,
+                        hashFunction,
+                        runtimeTemplate,
+                        hashDigest,
+                        hashDigestLength,
+                        errors
+                    )
                     let hashMap = codeGenerationJobsMap.get(hash)
                     if (hashMap) {
                         const moduleJob = hashMap.get(module)
@@ -3351,7 +3576,12 @@ This prevents using hashes of each other and should be avoided.`)
                 })
                 const moduleHashDigest = /** @type {string} */ (moduleHash.digest(hashDigest))
                 const oldHash = chunkGraph.getModuleHash(module, chunk.runtime)
-                chunkGraph.setModuleHashes(module, chunk.runtime, moduleHashDigest, moduleHashDigest.slice(0, hashDigestLength))
+                chunkGraph.setModuleHashes(
+                    module,
+                    chunk.runtime,
+                    moduleHashDigest,
+                    moduleHashDigest.slice(0, hashDigestLength)
+                )
                 codeGenerationJobsMap.get(oldHash).get(module).hash = moduleHashDigest
             }
             const chunkHash = createHash(hashFunction)
@@ -3378,7 +3608,9 @@ This prevents using hashes of each other and should be avoided.`)
                 this.errors.push(
                     new WebpackError(
                         `Conflict: Multiple assets emit different content to the same filename ${file}${
-                            assetInfo.sourceFilename ? `. Original source ${assetInfo.sourceFilename}` : ''
+                            assetInfo.sourceFilename
+                                ? `. Original source ${assetInfo.sourceFilename}`
+                                : ''
                         }`
                     )
                 )
@@ -3465,7 +3697,11 @@ This prevents using hashes of each other and should be avoided.`)
             if (typeof assetInfoUpdateOrFunction === 'function') {
                 this._setAssetInfo(file, assetInfoUpdateOrFunction(oldInfo), oldInfo)
             } else {
-                this._setAssetInfo(file, cachedCleverMerge(oldInfo, assetInfoUpdateOrFunction), oldInfo)
+                this._setAssetInfo(
+                    file,
+                    cachedCleverMerge(oldInfo, assetInfoUpdateOrFunction),
+                    oldInfo
+                )
             }
         }
     }
@@ -3477,7 +3713,11 @@ This prevents using hashes of each other and should be avoided.`)
         }
         if (this.assets[newFile]) {
             if (!isSourceEqual(this.assets[file], source)) {
-                this.errors.push(new WebpackError(`Conflict: Called Compilation.renameAsset for already existing filename ${newFile} with different content`))
+                this.errors.push(
+                    new WebpackError(
+                        `Conflict: Called Compilation.renameAsset for already existing filename ${newFile} with different content`
+                    )
+                )
             }
         }
         const assetInfo = this.assetsInfo.get(file)
@@ -3611,7 +3851,11 @@ This prevents using hashes of each other and should be avoided.`)
                     for (const chunk of chunkGraph.getModuleChunksIterable(module)) {
                         chunk.auxiliaryFiles.add(fileName)
                     }
-                    this.emitAsset(fileName, module.buildInfo.assets[assetName], assetsInfo ? assetsInfo.get(assetName) : undefined)
+                    this.emitAsset(
+                        fileName,
+                        module.buildInfo.assets[assetName],
+                        assetsInfo ? assetsInfo.get(assetName) : undefined
+                    )
                     this.hooks.moduleAsset.call(module, fileName)
                 }
             }
@@ -3677,7 +3921,13 @@ This prevents using hashes of each other and should be avoided.`)
 
                             let inTry = true
                             const errorAndCallback = err => {
-                                const filename = file || (typeof file === 'string' ? file : typeof filenameTemplate === 'string' ? filenameTemplate : '')
+                                const filename =
+                                    file ||
+                                    (typeof file === 'string'
+                                        ? file
+                                        : typeof filenameTemplate === 'string'
+                                        ? filenameTemplate
+                                        : '')
 
                                 this.errors.push(new ChunkRenderError(chunk, filename, err))
                                 inTry = false
@@ -3690,7 +3940,10 @@ This prevents using hashes of each other and should be avoided.`)
                                     assetInfo = fileManifest.info
                                 } else {
                                     filenameTemplate = fileManifest.filenameTemplate
-                                    const pathAndInfo = this.getPathWithInfo(filenameTemplate, fileManifest.pathOptions)
+                                    const pathAndInfo = this.getPathWithInfo(
+                                        filenameTemplate,
+                                        fileManifest.pathOptions
+                                    )
                                     file = pathAndInfo.path
                                     assetInfo = fileManifest.info
                                         ? {
@@ -3713,7 +3966,8 @@ This prevents using hashes of each other and should be avoided.`)
                                         inTry = false
                                         return callback(
                                             new WebpackError(
-                                                `Conflict: Multiple chunks emit assets to the same filename ${file}` + ` (chunks ${alreadyWritten.chunk.id} and ${chunk.id})`
+                                                `Conflict: Multiple chunks emit assets to the same filename ${file}` +
+                                                    ` (chunks ${alreadyWritten.chunk.id} and ${chunk.id})`
                                             )
                                         )
                                     } else {
@@ -3806,7 +4060,11 @@ This prevents using hashes of each other and should be avoided.`)
      * @returns {string} interpolated path
      */
     getAssetPath(filename, data) {
-        return this.hooks.assetPath.call(typeof filename === 'function' ? filename(data) : filename, data, undefined)
+        return this.hooks.assetPath.call(
+            typeof filename === 'function' ? filename(data) : filename,
+            data,
+            undefined
+        )
     }
 
     /**
@@ -3817,7 +4075,11 @@ This prevents using hashes of each other and should be avoided.`)
     getAssetPathWithInfo(filename, data) {
         const assetInfo = {}
         // TODO webpack 5: refactor assetPath hook to receive { path, info } object
-        const newPath = this.hooks.assetPath.call(typeof filename === 'function' ? filename(data, assetInfo) : filename, data, assetInfo)
+        const newPath = this.hooks.assetPath.call(
+            typeof filename === 'function' ? filename(data, assetInfo) : filename,
+            data,
+            assetInfo
+        )
         return { path: newPath, info: assetInfo }
     }
 
@@ -3867,7 +4129,9 @@ This prevents using hashes of each other and should be avoided.`)
                     if (err) return callback(err)
                     this.processDependenciesQueue.waitFor(module, err => {
                         if (err) return callback(err)
-                        for (const { module: m } of this.moduleGraph.getOutgoingConnections(module)) {
+                        for (const { module: m } of this.moduleGraph.getOutgoingConnections(
+                            module
+                        )) {
                             const size = modules.size
                             modules.add(m)
                             if (modules.size !== size) push(m)
@@ -3914,10 +4178,21 @@ This prevents using hashes of each other and should be avoided.`)
 
                 // Hash modules
                 for (const module of modules) {
-                    this._createModuleHash(module, chunkGraph, runtime, hashFunction, runtimeTemplate, hashDigest, hashDigestLength, errors)
+                    this._createModuleHash(
+                        module,
+                        chunkGraph,
+                        runtime,
+                        hashFunction,
+                        runtimeTemplate,
+                        hashDigest,
+                        hashDigestLength,
+                        errors
+                    )
                 }
 
-                const codeGenerationResults = new CodeGenerationResults(this.outputOptions.hashFunction)
+                const codeGenerationResults = new CodeGenerationResults(
+                    this.outputOptions.hashFunction
+                )
                 /**
                  * @param {Module} module the module
                  * @param {Callback} callback callback
@@ -3974,7 +4249,15 @@ This prevents using hashes of each other and should be avoided.`)
                     // Hash runtime modules
                     for (const module of runtimeModules) {
                         modules.add(module)
-                        this._createModuleHash(module, chunkGraph, runtime, hashFunction, runtimeTemplate, hashDigest, hashDigestLength)
+                        this._createModuleHash(
+                            module,
+                            chunkGraph,
+                            runtime,
+                            hashFunction,
+                            runtimeTemplate,
+                            hashDigest,
+                            hashDigestLength
+                        )
                     }
 
                     // Generate code for all runtime modules
@@ -4014,7 +4297,10 @@ This prevents using hashes of each other and should be avoided.`)
                             modules,
                             10,
                             (module, callback) => {
-                                const codeGenerationResult = codeGenerationResults.get(module, runtime)
+                                const codeGenerationResult = codeGenerationResults.get(
+                                    module,
+                                    runtime
+                                )
                                 /** @type {ExecuteModuleArgument} */
                                 const moduleArgument = {
                                     module,
@@ -4024,7 +4310,12 @@ This prevents using hashes of each other and should be avoided.`)
                                 }
                                 moduleArgumentsMap.set(module, moduleArgument)
                                 moduleArgumentsById.set(module.identifier(), moduleArgument)
-                                module.addCacheDependencies(fileDependencies, contextDependencies, missingDependencies, buildDependencies)
+                                module.addCacheDependencies(
+                                    fileDependencies,
+                                    contextDependencies,
+                                    missingDependencies,
+                                    buildDependencies
+                                )
                                 if (module.buildInfo.cacheable === false) {
                                     cacheable = false
                                 }
@@ -4037,14 +4328,21 @@ This prevents using hashes of each other and should be avoided.`)
                                         })
                                     }
                                 }
-                                this.hooks.prepareModuleExecution.callAsync(moduleArgument, context, callback)
+                                this.hooks.prepareModuleExecution.callAsync(
+                                    moduleArgument,
+                                    context,
+                                    callback
+                                )
                             },
                             err => {
                                 if (err) return callback(err)
 
                                 let exports
                                 try {
-                                    const { strictModuleErrorHandling, strictModuleExceptionHandling } = this.outputOptions
+                                    const {
+                                        strictModuleErrorHandling,
+                                        strictModuleExceptionHandling
+                                    } = this.outputOptions
                                     const __webpack_require__ = id => {
                                         const cached = moduleCache[id]
                                         if (cached !== undefined) {
@@ -4054,8 +4352,18 @@ This prevents using hashes of each other and should be avoided.`)
                                         const moduleArgument = moduleArgumentsById.get(id)
                                         return __webpack_require_module__(moduleArgument, id)
                                     }
-                                    const interceptModuleExecution = (__webpack_require__[RuntimeGlobals.interceptModuleExecution.replace('__webpack_require__.', '')] = [])
-                                    const moduleCache = (__webpack_require__[RuntimeGlobals.moduleCache.replace('__webpack_require__.', '')] = {})
+                                    const interceptModuleExecution = (__webpack_require__[
+                                        RuntimeGlobals.interceptModuleExecution.replace(
+                                            '__webpack_require__.',
+                                            ''
+                                        )
+                                    ] = [])
+                                    const moduleCache = (__webpack_require__[
+                                        RuntimeGlobals.moduleCache.replace(
+                                            '__webpack_require__.',
+                                            ''
+                                        )
+                                    ] = {})
 
                                     context.__webpack_require__ = __webpack_require__
 
@@ -4075,7 +4383,9 @@ This prevents using hashes of each other and should be avoided.`)
                                             },
                                             require: __webpack_require__
                                         }
-                                        interceptModuleExecution.forEach(handler => handler(execOptions))
+                                        interceptModuleExecution.forEach(handler =>
+                                            handler(execOptions)
+                                        )
                                         const module = moduleArgument.module
                                         this.buildTimeExecutedModules.add(module)
                                         const moduleObject = execOptions.module
@@ -4083,7 +4393,14 @@ This prevents using hashes of each other and should be avoided.`)
                                         try {
                                             if (id) moduleCache[id] = moduleObject
 
-                                            tryRunOrWebpackError(() => this.hooks.executeModule.call(moduleArgument, context), 'Compilation.hooks.executeModule')
+                                            tryRunOrWebpackError(
+                                                () =>
+                                                    this.hooks.executeModule.call(
+                                                        moduleArgument,
+                                                        context
+                                                    ),
+                                                'Compilation.hooks.executeModule'
+                                            )
                                             moduleObject.loaded = true
                                             return moduleObject.exports
                                         } catch (e) {
@@ -4097,13 +4414,19 @@ This prevents using hashes of each other and should be avoided.`)
                                         }
                                     }
 
-                                    for (const runtimeModule of chunkGraph.getChunkRuntimeModulesInOrder(chunk)) {
-                                        __webpack_require_module__(moduleArgumentsMap.get(runtimeModule))
+                                    for (const runtimeModule of chunkGraph.getChunkRuntimeModulesInOrder(
+                                        chunk
+                                    )) {
+                                        __webpack_require_module__(
+                                            moduleArgumentsMap.get(runtimeModule)
+                                        )
                                     }
                                     exports = __webpack_require__(module.identifier())
                                 } catch (e) {
                                     const err = new WebpackError(
-                                        `Execution of module code from module graph (${module.readableIdentifier(this.requestShortener)}) failed: ${e.message}`
+                                        `Execution of module code from module graph (${module.readableIdentifier(
+                                            this.requestShortener
+                                        )}) failed: ${e.message}`
                                     )
                                     err.stack = e.stack
                                     err.module = e.module
@@ -4146,12 +4469,18 @@ This prevents using hashes of each other and should be avoided.`)
         for (const chunk of this.chunks) {
             for (const module of chunkGraph.getChunkModulesIterable(chunk)) {
                 if (!this.modules.has(module)) {
-                    throw new Error('checkConstraints: module in chunk but not in compilation ' + ` ${chunk.debugId} ${module.debugId}`)
+                    throw new Error(
+                        'checkConstraints: module in chunk but not in compilation ' +
+                            ` ${chunk.debugId} ${module.debugId}`
+                    )
                 }
             }
             for (const module of chunkGraph.getChunkEntryModulesIterable(chunk)) {
                 if (!this.modules.has(module)) {
-                    throw new Error('checkConstraints: entry module in chunk but not in compilation ' + ` ${chunk.debugId} ${module.debugId}`)
+                    throw new Error(
+                        'checkConstraints: entry module in chunk but not in compilation ' +
+                            ` ${chunk.debugId} ${module.debugId}`
+                    )
                 }
             }
         }
@@ -4194,7 +4523,11 @@ Object.defineProperty(compilationPrototype, 'cache', {
         'Compilation.cache was removed in favor of Compilation.getCache()',
         'DEP_WEBPACK_COMPILATION_CACHE'
     ),
-    set: util.deprecate(v => {}, 'Compilation.cache was removed in favor of Compilation.getCache()', 'DEP_WEBPACK_COMPILATION_CACHE')
+    set: util.deprecate(
+        v => {},
+        'Compilation.cache was removed in favor of Compilation.getCache()',
+        'DEP_WEBPACK_COMPILATION_CACHE'
+    )
 })
 
 /**

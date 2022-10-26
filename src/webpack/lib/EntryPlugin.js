@@ -25,16 +25,17 @@ class EntryPlugin {
 
         const { entry, options, context } = this
         const dep = EntryPlugin.createDependency(entry, options)
-        compiler.hooks.make.tapAsync('EntryPlugin', (compilation, callback) => {
+
+        const callback = (compilation, callback) => {
             compilation.addEntry(context, dep, options, err => {
                 callback(err)
             })
-        })
+        }
+        compiler.hooks.make.tapAsync('EntryPlugin', callback)
     }
 
     static createDependency(entry, options) {
         const dep = new EntryDependency(entry)
-        // TODO webpack 6 remove string option
         dep.loc = { name: typeof options === 'object' ? options.name : options }
         return dep
     }
